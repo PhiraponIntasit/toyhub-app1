@@ -27,9 +27,9 @@ export function renderContact(store) {
         h('p', { class: 'just', style: 'font-size:14px;opacity:0.8;max-width:42ch' }, 'A damaged plate, a tracking number that has not moved, a question before you reserve — write to us and we answer in one working day.'),
         h('table', { class: 'table tnum', style: 'margin-top:24px' }, [
           h('tbody', {}, [
-            h('tr', {}, [h('th', { style: 'width:36%' }, 'Email'), h('td', {}, 'help@toyhub.co')]),
+            h('tr', {}, [h('th', { style: 'width:36%' }, 'Email'), h('td', {}, 'toyhubthailand@gmail.com')]),
             h('tr', {}, [h('th', {}, 'Telephone'), h('td', {}, '02 114 9070')]),
-            h('tr', {}, [h('th', {}, 'LINE'), h('td', {}, '@toyhub')]),
+            h('tr', {}, [h('th', {}, 'LINE'), h('td', {}, '@toyhubthailand')]),
             h('tr', {}, [h('th', {}, 'Hours'), h('td', {}, 'Mon–Sat, 10.00–19.00 ICT')]),
             h('tr', {}, [h('th', {}, 'Bench'), h('td', {}, '18 Charoen Krung Soi 30, Bang Rak, Bangkok 10500')])
           ])

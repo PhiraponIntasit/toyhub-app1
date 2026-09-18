@@ -100,7 +100,7 @@ export function renderHome(store) {
           h('div', { class: 'imgslot', style: 'width:100%;aspect-ratio:5/4;border-radius:var(--radius-md)' }, [
             h('span', { style: 'font-size:12px;opacity:0.55;max-width:22ch' }, 'The bench, second floor')
           ]),
-          h('figcaption', {}, 'The bench, second floor.')
+          h('figcaption', {}, 'made with love, do with love')
         ])
       ])
     ]),
