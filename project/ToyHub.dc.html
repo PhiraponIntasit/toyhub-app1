@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="_ds/classical-ab1eeba0-18d8-483d-8c82-b78d5b793966/styles.css">
+<script src="_ds/classical-ab1eeba0-18d8-483d-8c82-b78d5b793966/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body { font-feature-settings: normal; }
+  .tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .just { text-align: justify; hyphens: auto; }
+  .lnk { color: inherit; text-decoration: none; cursor: pointer; background: none; border: 0; font: inherit; padding: 0; }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes drift { from { transform: scale(1) translateY(0); } to { transform: scale(1.06) translateY(-1.5%); } }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @keyframes ruleIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .btn { transition: background-color .24s ease, color .24s ease, border-color .24s ease, transform .24s cubic-bezier(.2,.7,.2,1), box-shadow .24s ease; }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .lnk { transition: color .2s ease, border-color .25s ease, opacity .2s ease; }
+  .input, .card { transition: border-color .25s ease, box-shadow .3s ease, transform .3s ease; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+  .table tbody tr { transition: background-color .2s ease; }
+  .tag { transition: border-color .25s ease, color .25s ease; }
+
+  [data-plate] { transition: transform .5s cubic-bezier(.2,.7,.2,1), outline-color .35s ease; }
+  [data-plate] > div { transition: transform .7s cubic-bezier(.2,.7,.2,1), filter .5s ease; }
+  [data-plate]:hover { transform: translateY(-5px); }
+  [data-plate]:hover > div { transform: scale(1.05); filter: sepia(0.1) saturate(0.95) contrast(1.05); }
+  [data-kenburns] { animation: drift 22s ease-in-out infinite alternate; }
+
+  [data-reveal] { animation: riseIn .7s cubic-bezier(.2,.7,.2,1) both; animation-timeline: view(); animation-range: entry 0% cover 24%; }
+  [data-enter] { animation: fadeUp .55s cubic-bezier(.2,.7,.2,1) both; }
+  [data-enter-slow] { animation: fadeIn .8s ease both; }
+  [data-rule] { transform-origin: left; animation: ruleIn .8s cubic-bezier(.2,.7,.2,1) both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
+  body:has([data-theme="dark"]) {
+    --color-bg: #1a1918;
+    --color-surface: #232120;
+    --color-text: #efebe5;
+    --color-divider: color-mix(in srgb, #efebe5 20%, transparent);
+    --color-accent: #e1ad66;
+    --color-accent-700: #f2cd94;
+    --color-accent-800: #ffe3bf;
+    --color-accent-100: #3a270d;
+    --color-accent-2-800: #ffe3bf;
+    --color-accent-2-100: #382810;
+    --color-neutral-100: #2d2b2b;
+    --color-neutral-800: #e8e4df;
+    --color-neutral-900: #efebe5;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.5);
+    --shadow-md: 0 3px 10px rgba(0,0,0,0.55);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+    background: #1a1918;
+  }
+  body:has([data-theme="dark"]) .dialog-backdrop { background: rgba(0,0,0,0.62); }
+  [data-scroll] { overflow-x: auto; }
+  [data-header] .btn, [data-header] nav button { white-space: nowrap; }
+  @media (max-width: 1140px) {
+    [data-header] { flex-wrap: wrap !important; align-items: center !important; row-gap: 12px !important; }
+    [data-header] > nav { order: 3; width: 100%; }
+    [data-actions] { flex: 0 0 auto; margin-left: auto; }
+  }
+  @media (max-width: 900px) {
+    [data-col2] { grid-template-columns: minmax(0,1fr) !important; gap: 30px !important; }
+    [data-shopgrid] { grid-template-columns: minmax(0,1fr) !important; gap: 30px !important; }
+    [data-sticky] { position: static !important; }
+    [data-cols2text] { column-count: 1 !important; column-rule: 0 !important; }
+    [data-header] { flex-wrap: wrap !important; align-items: center !important; gap: 12px !important; }
+    [data-formgrid] { grid-template-columns: minmax(0,1fr) !important; }
+    h1 { font-size: 30px; }
+  }
+</style>
+</helmet>
+
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--color-bg);color:var(--color-text)">
+
+  <header style="position:sticky;top:0;z-index:20;background:var(--color-bg);border-bottom:1px solid var(--color-divider)">
+    <div data-header style="max-width:1200px;margin:0 auto;display:flex;align-items:baseline;gap:28px;padding:16px 24px">
+      <button class="lnk" onClick="{{ goHome }}" style="font-family:var(--font-heading);font-size:22px;letter-spacing:0.14em;margin-right:auto">TOYHUB</button>
+      <nav style="display:flex;flex-wrap:wrap;gap:22px;align-items:baseline">
+        <button class="lnk" onClick="{{ goHome }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabHome }}">Home</button>
+        <button class="lnk" onClick="{{ goShop }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabShop }}">Catalogue</button>
+        <button class="lnk" onClick="{{ goStory }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase">Story</button>
+        <button class="lnk" onClick="{{ goContact }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabContact }}">Contact</button>
+        <sc-if value="{{ isMember }}">
+          <button class="lnk" onClick="{{ goOrders }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabOrders }}">Orders</button>
+        </sc-if>
+        <sc-if value="{{ isMember }}">
+          <button class="lnk" onClick="{{ goWishlist }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabWish }}">Wishlist ({{ wishCount }})</button>
+        </sc-if>
+        <sc-if value="{{ isAdminUser }}">
+          <button class="lnk" onClick="{{ goAdmin }}" style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabAdmin }}">Admin</button>
+        </sc-if>
+      </nav>
+      <div data-actions style="display:flex;align-items:center;gap:12px;flex-wrap:nowrap">
+        <button class="btn btn-secondary btn-icon" onClick="{{ onToggleTheme }}" title="{{ themeLabel }}" aria-label="{{ themeLabel }}">{{ themeGlyph }}</button>
+        <sc-if value="{{ canBuy }}">
+          <button class="btn btn-secondary" onClick="{{ goCart }}" style="letter-spacing:0.06em">Cart ({{ cartCount }})</button>
+        </sc-if>
+        <sc-if value="{{ signedIn }}">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="text-align:right;line-height:1.25;white-space:nowrap">
+              <div style="font-family:var(--font-heading);font-size:14px">{{ userName }}</div>
+              <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700)">{{ userRoleLabel }}</div>
+            </div>
+            <button class="btn btn-ghost" onClick="{{ onSignOut }}">Sign out</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ signedOut }}">
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onClick="{{ goLogin }}">Sign in</button>
+            <button class="btn btn-primary" onClick="{{ goSignup }}">Register</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </header>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <main>
+      <section style="max-width:1200px;margin:0 auto;padding:56px 24px 0">
+        <div data-col2 style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center">
+          <div>
+            <div data-enter class="tnum" style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:18px">Plate {{ heroNum }} — {{ heroLine }}</div>
+            <h1 data-enter style="font-size:clamp(38px,4.4vw,62px);font-weight:400;margin:0 0 18px;animation-delay:.06s">{{ heroName }}</h1>
+            <p data-enter class="just" style="max-width:44ch;font-size:15px;opacity:0.85;animation-delay:.12s">{{ heroDesc }}</p>
+            <div class="tnum" style="display:flex;align-items:baseline;gap:14px;margin:26px 0 22px">
+              <span style="font-family:var(--font-heading);font-size:26px">{{ heroPrice }}</span>
+              <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6">{{ heroStatus }}</span>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-primary" onClick="{{ heroOpen }}">View the plate</button>
+              <button class="btn btn-secondary" onClick="{{ goShop }}">Browse catalogue</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:34px">
+              <button class="btn btn-icon btn-secondary" onClick="{{ heroPrev }}" aria-label="Previous">&#8592;</button>
+              <button class="btn btn-icon btn-secondary" onClick="{{ heroNext }}" aria-label="Next">&#8594;</button>
+              <div style="display:flex;gap:8px;margin-left:6px">
+                <sc-for list="{{ heroDots }}" as="d" hint-placeholder-count="3">
+                  <button class="lnk" onClick="{{ d.onClick }}" aria-label="Slide" style="width:26px;height:2px;background:{{ d.bg }}"></button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div data-enter-slow style="position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden">
+            <sc-if value="{{ heroHasImage }}">
+              <div data-kenburns role="img" aria-label="{{ heroName }}" style="position:absolute;inset:0;background-image:{{ heroBg }};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)"></div>
+            </sc-if>
+            <sc-if value="{{ heroNoImage }}">
+              <div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px">
+                <div>
+                  <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:6px">Plate pending</div>
+                  <div style="font-size:12px;opacity:0.6;max-width:26ch">Add a photograph for this piece from the Admin screen.</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal style="max-width:1200px;margin:64px auto 0;padding:0 24px">
+        <div style="display:flex;align-items:baseline;gap:18px;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:14px 0">
+          <span style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55">Ateliers we carry</span>
+          <div style="display:flex;flex-wrap:wrap;gap:26px;margin-left:auto">
+            <sc-for list="{{ brands }}" as="b" hint-placeholder-count="6">
+              <span style="font-family:var(--font-heading);font-size:15px;letter-spacing:0.08em">{{ b.name }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal style="max-width:1200px;margin:64px auto 0;padding:0 24px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px">
+          <div>
+            <h2 style="font-weight:400;margin:0">Featured plates</h2>
+            <p style="font-size:13px;opacity:0.6;margin:6px 0 0">Drawn at random from the cabinet on every visit.</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onClick="{{ onShuffle }}">Draw again</button>
+            <button class="btn btn-ghost" onClick="{{ goShop }}">All pieces &#8594;</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:28px">
+          <sc-for list="{{ featured }}" as="p" hint-placeholder-count="4">
+            <article style="display:flex;flex-direction:column;gap:12px">
+              <button class="lnk" onClick="{{ p.onOpen }}" style="display:block">
+                <div data-plate style="position:relative;aspect-ratio:3/4;background:var(--color-surface);border:6px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden">
+                  <sc-if value="{{ p.hasImage }}">
+                    <div role="img" aria-label="{{ p.name }}" style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)"></div>
+                  </sc-if>
+                  <sc-if value="{{ p.noImage }}">
+                    <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45">Plate pending</div>
+                  </sc-if>
+                </div>
+              </button>
+              <div>
+                <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700)">{{ p.line }}</div>
+                <button class="lnk" onClick="{{ p.onOpen }}" style="font-family:var(--font-heading);font-size:18px;text-align:left;margin-top:4px">{{ p.name }}</button>
+              </div>
+              <div class="tnum" style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--color-divider);padding-top:10px">
+                <span style="font-size:15px">{{ p.priceLabel }}</span>
+                <span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.6">{{ p.scaleLabel }}</span>
+              </div>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+
+      <section data-reveal style="max-width:1200px;margin:80px auto 0;padding:0 24px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--color-divider);padding-bottom:12px;margin-bottom:24px">
+          <h2 style="font-weight:400;margin:0">New arrivals</h2>
+          <span class="tnum" style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55">{{ arrivalCount }} pieces added</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px">
+          <sc-for list="{{ arrivals }}" as="p" hint-placeholder-count="3">
+            <div class="card" style="gap:10px">
+              <span class="card-kicker">{{ p.line }}</span>
+              <button class="lnk card-title" onClick="{{ p.onOpen }}" style="text-align:left">{{ p.name }}</button>
+              <p class="card-body">{{ p.short }}</p>
+              <div class="card-meta tnum" style="justify-content:space-between;border-top:1px solid var(--color-divider);padding-top:10px">
+                <span>{{ p.priceLabel }}</span>
+                <span>{{ p.status }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="story" data-reveal style="max-width:1200px;margin:88px auto 0;padding:0 24px">
+        <div data-col2 style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start;border-top:1px solid var(--color-divider);padding-top:34px">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">The shop</div>
+            <h2 style="font-size:34px;font-weight:400;margin:0 0 16px">A cabinet, not a toybox</h2>
+            <div data-cols2text style="column-count:2;column-gap:32px;column-rule:1px solid var(--color-divider)">
+              <p class="just" style="font-size:14px;opacity:0.85">ToyHub keeps a short list on purpose. Each piece is examined, photographed on the bench, and listed with its atelier, scale and edition size — nothing enters the cabinet unless we would keep it ourselves.</p>
+              <p class="just" style="font-size:14px;opacity:0.85">Pre-orders are held at deposit and settled when the shipping window opens. Collectors are welcome to reserve a plate, ask for bench photographs, or leave a piece on hold while a shelf is being built for it.</p>
+            </div>
+            <button class="btn btn-secondary" style="margin-top:22px" onClick="{{ goShop }}">Enter the catalogue</button>
+          </div>
+          <figure>
+            <sc-if value="{{ isAdminUser }}">
+              <image-slot id="toyhub-story" shape="rect" placeholder="Drop a bench photograph" style="width:100%;aspect-ratio:5/4"></image-slot>
+            </sc-if>
+            <sc-if value="{{ notAdminUser }}">
+              <image-slot id="toyhub-story" shape="rect" placeholder="The bench, second floor" style="width:100%;aspect-ratio:5/4;pointer-events:none"></image-slot>
+            </sc-if>
+            <figcaption>{{ storyCaption }}</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <footer style="max-width:1200px;margin:88px auto 0;padding:26px 24px 64px;border-top:1px solid var(--color-divider);display:flex;gap:18px;flex-wrap:wrap;align-items:baseline">
+        <span style="font-family:var(--font-heading);letter-spacing:0.14em">TOYHUB</span>
+        <span style="font-size:12px;opacity:0.55">Collectible figures, statues and dioramas.</span>
+        <button class="lnk" onClick="{{ goContact }}" style="font-size:12px;color:var(--color-accent-700)">Contact the shop</button>
+        <span class="tnum" style="font-size:12px;opacity:0.55;margin-left:auto">{{ productCount }} pieces catalogued</span>
+      </footer>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isShop }}">
+    <main style="max-width:1200px;margin:0 auto;padding:40px 24px 80px">
+      <div data-shopgrid style="display:grid;grid-template-columns:238px minmax(0,1fr);gap:44px;align-items:start">
+        <aside data-sticky style="position:sticky;top:96px;display:flex;flex-direction:column;gap:26px">
+          <div class="field">
+            <label>Search</label>
+            <input class="input" type="search" placeholder="Piece or atelier" value="{{ query }}" onChange="{{ onQuery }}">
+          </div>
+          <div>
+            <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px">Category</div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ catFilters }}" as="c" hint-placeholder-count="6">
+                <button class="lnk" onClick="{{ c.onClick }}" style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:14px;border-bottom:1px solid var(--color-divider);color:{{ c.color }}">
+                  <span>{{ c.label }}</span>
+                  <span class="tnum" style="opacity:0.5;font-size:12px">{{ c.count }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px">Availability</div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ statusFilters }}" as="s" hint-placeholder-count="4">
+                <button class="lnk" onClick="{{ s.onClick }}" style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:14px;border-bottom:1px solid var(--color-divider);color:{{ s.color }}">
+                  <span>{{ s.label }}</span>
+                  <span class="tnum" style="opacity:0.5;font-size:12px">{{ s.count }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div class="field">
+            <label>Ceiling — {{ maxPriceLabel }}</label>
+            <input class="input" type="range" min="{{ priceMin }}" max="{{ priceMax }}" step="500" value="{{ maxPrice }}" onChange="{{ onMaxPrice }}" style="padding:0;border:0;accent-color:var(--color-accent)">
+          </div>
+          <button class="btn btn-secondary" onClick="{{ onClearFilters }}">Clear filters</button>
+        </aside>
+
+        <div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--color-divider);padding-bottom:14px;margin-bottom:26px">
+            <div>
+              <h1 data-enter style="font-size:32px;font-weight:400;margin:0">Catalogue</h1>
+              <span class="tnum" style="font-size:12px;opacity:0.6">{{ resultLabel }}</span>
+            </div>
+            <div class="field" style="width:190px">
+              <label>Order</label>
+              <select class="input" value="{{ sort }}" onChange="{{ onSort }}">
+                <option value="curated">Curated</option>
+                <option value="new">Newest first</option>
+                <option value="low">Price, low to high</option>
+                <option value="high">Price, high to low</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:30px">
+            <sc-for list="{{ shopItems }}" as="p" hint-placeholder-count="6">
+              <article style="display:flex;flex-direction:column;gap:12px;animation:fadeUp 0.35s ease both">
+                <button class="lnk" onClick="{{ p.onOpen }}">
+                  <div data-plate style="position:relative;aspect-ratio:3/4;background:var(--color-surface);border:6px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden">
+                    <sc-if value="{{ p.hasImage }}">
+                      <div role="img" aria-label="{{ p.name }}" style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)"></div>
+                    </sc-if>
+                    <sc-if value="{{ p.noImage }}">
+                      <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45">Plate pending</div>
+                    </sc-if>
+                  </div>
+                </button>
+                <div>
+                  <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700)">{{ p.line }}</div>
+                  <button class="lnk" onClick="{{ p.onOpen }}" style="font-family:var(--font-heading);font-size:17px;text-align:left;margin-top:4px">{{ p.name }}</button>
+                </div>
+                <div class="tnum" style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--color-divider);padding-top:10px">
+                  <span style="font-size:15px">{{ p.priceLabel }}</span>
+                  <div style="display:flex;gap:4px;align-items:center">
+                    <button class="btn btn-ghost" onClick="{{ p.onWish }}" title="Save this piece" aria-label="Save this piece">{{ p.wishGlyph }}</button>
+                    <button class="btn btn-ghost" onClick="{{ p.onAdd }}" disabled="{{ p.soldOut }}">{{ p.addLabel }}</button>
+                  </div>
+                </div>
+              </article>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ shopEmpty }}">
+            <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:48px;text-align:center">
+              <div style="font-family:var(--font-heading);font-size:22px;margin-bottom:8px">Nothing under these terms</div>
+              <p style="font-size:13px;opacity:0.65;margin:0 0 16px">Loosen the ceiling or clear the filters to see the full cabinet.</p>
+              <button class="btn btn-primary" onClick="{{ onClearFilters }}">Clear filters</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isProduct }}">
+    <main style="max-width:1200px;margin:0 auto;padding:32px 24px 80px">
+      <button class="btn btn-ghost" onClick="{{ goShop }}" style="margin-bottom:22px">&#8592; Catalogue</button>
+      <div data-col2 style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.95fr);gap:56px;align-items:start">
+        <div>
+          <div data-plate data-enter-slow style="position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden">
+            <sc-if value="{{ pdHasImage }}">
+              <div role="img" aria-label="{{ pdName }}" style="position:absolute;inset:0;background-image:{{ pdBg }};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)"></div>
+            </sc-if>
+            <sc-if value="{{ pdNoImage }}">
+              <div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:26px">
+                <div>
+                  <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:6px">Plate pending</div>
+                  <div style="font-size:12px;opacity:0.6;max-width:26ch">Add photographs for this piece in Admin — one image address per line.</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ pdHasThumbs }}">
+            <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+              <sc-for list="{{ pdThumbs }}" as="t" hint-placeholder-count="3">
+                <button class="lnk" onClick="{{ t.onClick }}" aria-label="View photograph" style="width:64px;height:78px;background-image:{{ t.bg }};background-size:cover;background-position:center;border:4px solid var(--color-surface);outline:1px solid {{ t.ring }};filter:sepia(0.22) saturate(0.82) contrast(1.05)"></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div>
+          <div data-enter style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">{{ pdLine }}</div>
+          <h1 data-enter style="font-size:clamp(30px,3.4vw,44px);font-weight:400;margin:10px 0 14px;animation-delay:.06s">{{ pdName }}</h1>
+          <p data-enter class="just" style="font-size:15px;opacity:0.85;max-width:52ch;animation-delay:.12s">{{ pdDesc }}</p>
+          <div class="tnum" style="display:flex;align-items:baseline;gap:16px;margin:24px 0 20px;border-top:1px solid var(--color-divider);padding-top:18px">
+            <span style="font-family:var(--font-heading);font-size:30px">{{ pdPrice }}</span>
+            <span class="tag tag-outline">{{ pdStatus }}</span>
+          </div>
+          <div class="tnum" style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.65;margin-bottom:14px">{{ pdStockLabel }}</div>
+          <sc-if value="{{ pdIsPreorder }}">
+            <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:18px;margin-bottom:18px">
+              <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Pre-order terms</div>
+              <div class="tnum" style="font-size:14px">Shipping window {{ pdRelease }} — {{ pdEdition }}</div>
+              <p class="just" style="font-size:13px;opacity:0.78;margin:8px 0 14px;max-width:48ch">Reservations close one month before the window opens. Take it on a 30% deposit — the balance and insured carriage fall due when the piece ships — or settle it in full today.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-primary" onClick="{{ pdAddDeposit }}" disabled="{{ pdSoldOut }}">Reserve — {{ pdDepositLabel }} deposit</button>
+                <button class="btn btn-secondary" onClick="{{ pdAddFull }}" disabled="{{ pdSoldOut }}">Pay in full — {{ pdPrice }}</button>
+                <button class="btn btn-ghost" onClick="{{ pdBuyNow }}" disabled="{{ pdSoldOut }}">Pre-order it now &#8594;</button>
+              </div>
+            </div>
+          </sc-if>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <sc-if value="{{ pdIsStocked }}">
+              <button class="btn btn-primary" onClick="{{ pdAdd }}" disabled="{{ pdSoldOut }}">{{ pdAddLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ pdIsStocked }}">
+              <button class="btn btn-secondary" onClick="{{ pdBuyNow }}" disabled="{{ pdSoldOut }}">Buy it now</button>
+            </sc-if>
+            <button class="btn btn-secondary" onClick="{{ pdWishToggle }}">{{ pdWishLabel }}</button>
+          </div>
+          <table class="table tnum" style="margin-top:34px">
+            <tbody>
+              <sc-for list="{{ pdSpecs }}" as="s" hint-placeholder-count="5">
+                <tr><th style="width:38%">{{ s.k }}</th><td>{{ s.v }}</td></tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <section data-reveal style="margin-top:72px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--color-divider);padding-bottom:12px;margin-bottom:24px">
+          <h2 style="font-weight:400;margin:0">From the same shelf</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:26px">
+          <sc-for list="{{ related }}" as="p" hint-placeholder-count="4">
+            <div class="card" style="gap:10px">
+              <span class="card-kicker">{{ p.line }}</span>
+              <button class="lnk card-title" onClick="{{ p.onOpen }}" style="text-align:left">{{ p.name }}</button>
+              <div class="card-meta tnum" style="justify-content:space-between;border-top:1px solid var(--color-divider);padding-top:10px">
+                <span>{{ p.priceLabel }}</span>
+                <span>{{ p.scaleLabel }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isCart }}">
+    <main style="max-width:980px;margin:0 auto;padding:40px 24px 80px">
+      <h1 data-enter style="font-size:34px;font-weight:400;margin:0 0 6px">Your cart</h1>
+      <p style="font-size:13px;opacity:0.6;margin:0 0 26px">Pre-order lines can be settled as a 30% deposit or in full. A deposit-only order carries no carriage — that is charged when the piece ships.</p>
+      <sc-if value="{{ cartHasLines }}">
+        <table class="table tnum">
+          <thead><tr><th>Piece</th><th>Atelier</th><th style="text-align:center">Qty</th><th style="text-align:right">Line</th><th></th></tr></thead>
+          <tbody>
+            <sc-for list="{{ cartLines }}" as="l" hint-placeholder-count="2">
+              <tr>
+                <td>
+                  <button class="lnk" onClick="{{ l.onOpen }}" style="font-family:var(--font-heading);font-size:17px;text-align:left">{{ l.name }}</button>
+                  <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.55;margin-top:2px">{{ l.status }} — {{ l.noteLabel }}</div>
+                  <sc-if value="{{ l.isPreorder }}">
+                    <div style="display:flex;gap:14px;margin-top:8px">
+                      <button class="lnk" onClick="{{ l.onDeposit }}" style="font-size:12px;padding-bottom:3px;border-bottom:1px solid {{ l.depBorder }};color:{{ l.depColor }}">30% deposit</button>
+                      <button class="lnk" onClick="{{ l.onFull }}" style="font-size:12px;padding-bottom:3px;border-bottom:1px solid {{ l.fullBorder }};color:{{ l.fullColor }}">Pay in full</button>
+                    </div>
+                  </sc-if>
+                </td>
+                <td style="opacity:0.75">{{ l.line }}</td>
+                <td>
+                  <div style="display:flex;gap:6px;justify-content:center;align-items:center">
+                    <button class="btn btn-secondary" onClick="{{ l.onDec }}" style="width:30px;height:30px;padding:0">&#8722;</button>
+                    <span style="min-width:22px;text-align:center">{{ l.qty }}</span>
+                    <button class="btn btn-secondary" onClick="{{ l.onInc }}" style="width:30px;height:30px;padding:0">+</button>
+                  </div>
+                </td>
+                <td style="text-align:right">{{ l.totalLabel }}</td>
+                <td style="text-align:right"><button class="btn btn-ghost" onClick="{{ l.onRemove }}">Remove</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:flex-end;margin-top:28px">
+          <div style="width:320px;display:flex;flex-direction:column;gap:10px">
+            <div class="tnum" style="display:flex;justify-content:space-between;font-size:14px"><span style="opacity:0.7">Subtotal</span><span>{{ cartSubtotal }}</span></div>
+            <div class="tnum" style="display:flex;justify-content:space-between;font-size:14px"><span style="opacity:0.7">Insured carriage</span><span>{{ cartShipping }}</span></div>
+            <sc-if value="{{ cartCarriageLater }}">
+              <div style="font-size:12px;opacity:0.6">Carriage is charged when the reserved piece ships.</div>
+            </sc-if>
+            <sc-if value="{{ cartHasBalance }}">
+              <div class="tnum" style="display:flex;justify-content:space-between;font-size:13px;opacity:0.7"><span>Balance on shipping</span><span>{{ cartBalance }}</span></div>
+            </sc-if>
+            <div class="tnum" style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--color-divider);padding-top:10px">
+              <span style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7">Due now</span>
+              <span style="font-family:var(--font-heading);font-size:24px">{{ cartTotal }}</span>
+            </div>
+            <button class="btn btn-primary btn-block" onClick="{{ onCheckout }}">Proceed to checkout</button>
+            <button class="btn btn-secondary btn-block" onClick="{{ goShop }}">Keep browsing</button>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cartEmpty }}">
+        <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:56px;text-align:center">
+          <div style="font-family:var(--font-heading);font-size:24px;margin-bottom:8px">The cart is empty</div>
+          <p style="font-size:13px;opacity:0.65;margin:0 0 18px">Nothing reserved yet.</p>
+          <button class="btn btn-primary" onClick="{{ goShop }}">Open the catalogue</button>
+        </div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isAdmin }}">
+    <main style="max-width:1200px;margin:0 auto;padding:40px 24px 80px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--color-divider);padding-bottom:16px;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">Shop administration</div>
+          <h1 style="font-size:32px;font-weight:400;margin:8px 0 0">{{ adminTitle }}</h1>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-secondary" onClick="{{ onRestore }}">Restore samples</button>
+          <button class="btn btn-primary" onClick="{{ onNew }}">Add a piece</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:22px;margin:20px 0 22px;flex-wrap:wrap">
+        <sc-for list="{{ adminTabs }}" as="t" hint-placeholder-count="3">
+          <button class="lnk" onClick="{{ t.onClick }}" style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;padding-bottom:5px;border-bottom:2px solid {{ t.border }};color:{{ t.color }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ adminIsCatalogue }}">
+        <div>
+          <p style="font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch">Up to four pieces can be featured in the homepage hero — marking a fifth releases the piece featured longest. Stock falls automatically as orders are paid, and a piece with no units left is marked sold out.</p>
+          <div data-scroll>
+            <table class="table tnum">
+              <thead><tr><th>Piece</th><th>Atelier</th><th>Category</th><th>Status</th><th style="text-align:right">Stock</th><th style="text-align:right">Price</th><th>Photos</th><th></th></tr></thead>
+              <tbody>
+                <sc-for list="{{ adminRows }}" as="r" hint-placeholder-count="6">
+                  <tr>
+                    <td>
+                      <div style="font-family:var(--font-heading);font-size:17px">{{ r.name }}</div>
+                      <div style="font-size:11px;opacity:0.55;margin-top:2px">{{ r.featuredLabel }}</div>
+                    </td>
+                    <td style="opacity:0.75">{{ r.line }}</td>
+                    <td style="opacity:0.75">{{ r.category }}</td>
+                    <td>{{ r.status }}</td>
+                    <td style="text-align:right">{{ r.stockLabel }}</td>
+                    <td style="text-align:right">{{ r.priceLabel }}</td>
+                    <td style="opacity:0.6">{{ r.photoLabel }}</td>
+                    <td style="text-align:right;white-space:nowrap">
+                      <button class="btn btn-ghost" onClick="{{ r.onEdit }}">Edit</button>
+                      <button class="btn btn-ghost" onClick="{{ r.onDelete }}">Delete</button>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ adminIsOrders }}">
+        <div>
+          <p style="font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch">Every paid order, newest first. The customer already has the confirmation email; entering a tracking number and sending it emails them a second time and closes the order as completed.</p>
+          <sc-if value="{{ adminHasOrders }}">
+            <div data-scroll>
+              <table class="table tnum">
+                <thead><tr><th>Reference</th><th>Customer</th><th>Pieces</th><th style="text-align:right">Paid</th><th>State</th><th>Tracking</th><th></th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ adminOrders }}" as="o" hint-placeholder-count="3">
+                    <tr>
+                      <td>
+                        <div style="font-family:var(--font-heading);font-size:16px">{{ o.ref }}</div>
+                        <div style="font-size:11px;opacity:0.55">{{ o.date }} — card {{ o.card }}</div>
+                      </td>
+                      <td style="opacity:0.8">
+                        <div>{{ o.name }}</div>
+                        <div style="font-size:11px;opacity:0.7">{{ o.email }}</div>
+                        <div class="tnum" style="font-size:11px;opacity:0.7">{{ o.phone }}</div>
+                      </td>
+                      <td style="opacity:0.8;font-size:13px;white-space:pre-line">{{ o.itemsLabel }}</td>
+                      <td style="text-align:right">{{ o.totalLabel }}</td>
+                      <td>
+                        <select class="input" value="{{ o.status }}" onChange="{{ o.onStatus }}" style="min-width:160px">
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Producing">Producing</option>
+                          <option value="Ready to ship">Ready to ship</option>
+                          <option value="Completed">Completed — shipped</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div style="display:flex;flex-direction:column;gap:6px;min-width:190px">
+                          <input class="input tnum" value="{{ o.tracking }}" onChange="{{ o.onTracking }}" placeholder="TH1234567890">
+                          <button class="btn btn-secondary" onClick="{{ o.onShip }}">{{ o.shipLabel }}</button>
+                        </div>
+                      </td>
+                      <td style="text-align:right"><button class="btn btn-ghost" onClick="{{ o.onDelete }}">Delete</button></td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+          <sc-if value="{{ adminNoOrders }}">
+            <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:44px;text-align:center">
+              <div style="font-family:var(--font-heading);font-size:22px;margin-bottom:6px">No orders yet</div>
+              <p style="font-size:13px;opacity:0.65;margin:0">Paid orders appear here with their state and contact details.</p>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ adminIsMessages }}">
+        <div>
+          <p style="font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch">Enquiries sent from the contact page, newest first.</p>
+          <sc-if value="{{ adminHasMessages }}">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-for list="{{ adminMessages }}" as="m" hint-placeholder-count="2">
+                <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:18px">
+                  <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline">
+                    <div>
+                      <div style="font-family:var(--font-heading);font-size:18px">{{ m.subject }}</div>
+                      <div class="tnum" style="font-size:12px;opacity:0.65">{{ m.name }} — {{ m.email }} — {{ m.date }}</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <span class="tag tag-outline">{{ m.state }}</span>
+                      <button class="btn btn-ghost" onClick="{{ m.onToggle }}">{{ m.toggleLabel }}</button>
+                      <button class="btn btn-ghost" onClick="{{ m.onDelete }}">Delete</button>
+                    </div>
+                  </div>
+                  <p class="just" style="font-size:14px;opacity:0.85;margin:12px 0 0;white-space:pre-line">{{ m.body }}</p>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ adminNoMessages }}">
+            <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:44px;text-align:center">
+              <div style="font-family:var(--font-heading);font-size:22px;margin-bottom:6px">No enquiries</div>
+              <p style="font-size:13px;opacity:0.65;margin:0">Messages sent from the contact page land here.</p>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ adminIsDemand }}">
+        <div>
+          <p style="font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch">Pieces collectors have saved or asked to be notified about — the cheapest signal for a second run.</p>
+          <sc-if value="{{ adminHasDemand }}">
+            <div data-scroll>
+              <table class="table tnum">
+                <thead><tr><th>Piece</th><th>Status</th><th style="text-align:right">Stock</th><th style="text-align:right">Collectors waiting</th><th></th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ demandRows }}" as="d" hint-placeholder-count="3">
+                    <tr>
+                      <td style="font-family:var(--font-heading);font-size:16px">{{ d.name }}</td>
+                      <td style="opacity:0.8">{{ d.status }}</td>
+                      <td style="text-align:right">{{ d.stockLabel }}</td>
+                      <td style="text-align:right;color:var(--color-accent-700)">{{ d.count }}</td>
+                      <td style="text-align:right"><button class="btn btn-ghost" onClick="{{ d.onEdit }}">Edit</button></td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+          <sc-if value="{{ adminNoDemand }}">
+            <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:44px;text-align:center">
+              <div style="font-family:var(--font-heading);font-size:22px;margin-bottom:6px">No saved pieces yet</div>
+              <p style="font-size:13px;opacity:0.65;margin:0">When collectors save a piece or ask to be told it is back, it is counted here.</p>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isOrders }}">
+    <main style="max-width:980px;margin:0 auto;padding:40px 24px 90px">
+      <h1 data-enter style="font-size:34px;font-weight:400;margin:0 0 6px">Your orders</h1>
+      <p style="font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch">You are emailed twice: once when the order is confirmed, and again with the tracking number when it ships — which closes the order as completed.</p>
+      <div style="display:flex;gap:10px;margin:0 0 26px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onClick="{{ goContact }}">A problem with an order? Contact us</button>
+      </div>
+      <sc-if value="{{ hasMyOrders }}">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <sc-for list="{{ myOrders }}" as="o" hint-placeholder-count="2">
+            <div data-reveal style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:22px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                <div>
+                  <div class="tnum" style="font-family:var(--font-heading);font-size:20px">{{ o.ref }}</div>
+                  <div class="tnum" style="font-size:12px;opacity:0.6">{{ o.date }} — card ending {{ o.card }}</div>
+                </div>
+                <span class="tag tag-outline">{{ o.status }}</span>
+              </div>
+              <div style="margin-top:14px;border-top:1px solid var(--color-divider);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ o.items }}" as="it" hint-placeholder-count="2">
+                  <div class="tnum" style="display:flex;justify-content:space-between;gap:14px;font-size:14px">
+                    <span>{{ it.label }}</span>
+                    <span>{{ it.dueLabel }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div class="tnum" style="display:flex;justify-content:space-between;border-top:1px solid var(--color-divider);margin-top:12px;padding-top:10px;font-size:14px">
+                <span style="opacity:0.7">Paid</span>
+                <span style="font-family:var(--font-heading);font-size:20px">{{ o.totalLabel }}</span>
+              </div>
+              <sc-if value="{{ o.hasBalance }}">
+                <div class="tnum" style="font-size:12px;opacity:0.65;margin-top:6px">Balance due when the window opens — {{ o.balanceLabel }} (plus carriage)</div>
+              </sc-if>
+              <div style="border-top:1px solid var(--color-divider);margin-top:14px;padding-top:12px;display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ o.emails }}" as="m" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;align-items:baseline">
+                    <span style="color:{{ m.color }};font-size:13px">{{ m.mark }}</span>
+                    <div>
+                      <div style="font-size:13px">{{ m.title }}</div>
+                      <div class="tnum" style="font-size:11px;opacity:0.6">{{ m.detail }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noMyOrders }}">
+        <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:56px;text-align:center">
+          <div style="font-family:var(--font-heading);font-size:24px;margin-bottom:8px">No orders yet</div>
+          <p style="font-size:13px;opacity:0.65;margin:0 0 18px">Anything you buy is listed here with its state.</p>
+          <button class="btn btn-primary" onClick="{{ goShop }}">Open the catalogue</button>
+        </div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isWishlist }}">
+    <main style="max-width:1100px;margin:0 auto;padding:40px 24px 90px">
+      <h1 data-enter style="font-size:34px;font-weight:400;margin:0 0 6px">Saved pieces</h1>
+      <p style="font-size:13px;opacity:0.6;margin:0 0 26px">Sold-out pieces you save count as demand — the shop is told, and you are notified first if a second run is announced.</p>
+      <sc-if value="{{ hasWish }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px">
+          <sc-for list="{{ wishItems }}" as="p" hint-placeholder-count="3">
+            <div class="card" style="gap:10px">
+              <span class="card-kicker">{{ p.line }}</span>
+              <button class="lnk card-title" onClick="{{ p.onOpen }}" style="text-align:left">{{ p.name }}</button>
+              <p class="card-body">{{ p.stockNote }}</p>
+              <div class="card-meta tnum" style="justify-content:space-between;border-top:1px solid var(--color-divider);padding-top:10px">
+                <span>{{ p.priceLabel }}</span>
+                <span>{{ p.status }}</span>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-primary" onClick="{{ p.onAdd }}" disabled="{{ p.soldOut }}" style="flex:1">{{ p.addLabel }}</button>
+                <button class="btn btn-secondary" onClick="{{ p.onWish }}">Remove</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noWish }}">
+        <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:56px;text-align:center">
+          <div style="font-family:var(--font-heading);font-size:24px;margin-bottom:8px">Nothing saved yet</div>
+          <p style="font-size:13px;opacity:0.65;margin:0 0 18px">Use “Save this piece” on any plate — including sold-out ones.</p>
+          <button class="btn btn-primary" onClick="{{ goShop }}">Open the catalogue</button>
+        </div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isContact }}">
+    <main style="max-width:1100px;margin:0 auto;padding:56px 24px 90px">
+      <div data-col2 style="display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:56px;align-items:start;border-top:1px solid var(--color-divider);padding-top:36px">
+        <div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">Contact</div>
+          <h1 data-enter style="font-size:40px;font-weight:400;margin:10px 0 16px">Talk to the shop</h1>
+          <p class="just" style="font-size:14px;opacity:0.8;max-width:42ch">A damaged plate, a tracking number that has not moved, a question before you reserve — write to us and we answer in one working day.</p>
+          <table class="table tnum" style="margin-top:24px">
+            <tbody>
+              <tr><th style="width:36%">Email</th><td>help@toyhub.co</td></tr>
+              <tr><th>Telephone</th><td>02 114 9070</td></tr>
+              <tr><th>LINE</th><td>@toyhub</td></tr>
+              <tr><th>Hours</th><td>Mon–Sat, 10.00–19.00 ICT</td></tr>
+              <tr><th>Bench</th><td>18 Charoen Krung Soi 30, Bang Rak, Bangkok 10500</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:12px;opacity:0.6;margin-top:16px">For a specific order, quote its reference (TH-XXXXXX) — it is on both emails.</p>
+        </div>
+        <form data-formgrid onSubmit="{{ onContactSubmit }}" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:26px">
+          <div class="field">
+            <label>Your name</label>
+            <input class="input" value="{{ cName }}" onChange="{{ onCName }}" placeholder="Somchai Phanit">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" value="{{ cEmail }}" onChange="{{ onCEmail }}" placeholder="you@example.com">
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Subject</label>
+            <select class="input" value="{{ cSubject }}" onChange="{{ onCSubject }}">
+              <option value="An order or tracking">An order or tracking</option>
+              <option value="A damaged or missing piece">A damaged or missing piece</option>
+              <option value="Before I reserve">Before I reserve</option>
+              <option value="Something else">Something else</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Order reference (if any)</label>
+            <input class="input tnum" value="{{ cRef }}" onChange="{{ onCRef }}" placeholder="TH-XXXXXX">
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Message</label>
+            <textarea class="input" value="{{ cBody }}" onChange="{{ onCBody }}" placeholder="What happened, and what would put it right." style="min-height:130px"></textarea>
+          </div>
+          <sc-if value="{{ cError }}">
+            <div style="grid-column:1 / -1;font-size:12px;color:var(--color-accent-700)">{{ cError }}</div>
+          </sc-if>
+          <sc-if value="{{ cSent }}">
+            <div style="grid-column:1 / -1;font-size:13px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:14px">Thank you — the shop has your message and replies to {{ cSentTo }}.</div>
+          </sc-if>
+          <div style="grid-column:1 / -1;display:flex;justify-content:flex-end;gap:10px">
+            <button class="btn btn-primary" type="submit">Send the message</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isLogin }}">
+    <main style="max-width:1100px;margin:0 auto;padding:56px 24px 90px">
+      <div data-col2 style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start;border-top:1px solid var(--color-divider);padding-top:36px">
+        <div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">Members</div>
+          <h1 data-enter style="font-size:40px;font-weight:400;margin:10px 0 16px">Sign in</h1>
+          <p class="just" style="font-size:14px;opacity:0.8;max-width:42ch">Reserving a plate or settling a pre-order requires an account. Shop staff sign in here as well — administrator accounts manage the catalogue and cannot place orders.</p>
+          <div style="font-size:12px;opacity:0.6;margin-top:18px;border-top:1px solid var(--color-divider);padding-top:14px">
+            Demo administrator — admin@toyhub.co / admin1234
+          </div>
+        </div>
+        <form onSubmit="{{ onLoginSubmit }}" style="display:flex;flex-direction:column;gap:14px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:26px">
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" value="{{ authEmail }}" onChange="{{ onAuthEmail }}" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input class="input" type="password" value="{{ authPassword }}" onChange="{{ onAuthPassword }}" placeholder="••••••••">
+          </div>
+          <sc-if value="{{ authError }}">
+            <div style="font-size:12px;color:var(--color-accent-700)">{{ authError }}</div>
+          </sc-if>
+          <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+          <div style="font-size:12px;opacity:0.7;text-align:center">
+            No account yet? <button class="btn btn-ghost" onClick="{{ goSignup }}" type="button">Register</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isSignup }}">
+    <main style="max-width:1100px;margin:0 auto;padding:56px 24px 90px">
+      <div data-col2 style="display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:56px;align-items:start;border-top:1px solid var(--color-divider);padding-top:36px">
+        <div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">Members</div>
+          <h1 data-enter style="font-size:40px;font-weight:400;margin:10px 0 16px">Register</h1>
+          <p class="just" style="font-size:14px;opacity:0.8;max-width:40ch">Every field is required: pieces ship insured and pre-orders are confirmed by telephone before the window opens.</p>
+        </div>
+        <form data-formgrid onSubmit="{{ onSignupSubmit }}" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:26px">
+          <div class="field" style="grid-column:1 / -1">
+            <label>Full name (required)</label>
+            <input class="input" value="{{ regName }}" onChange="{{ onRegName }}" placeholder="Somchai Phanit">
+          </div>
+          <div class="field">
+            <label>Email (required)</label>
+            <input class="input" type="email" value="{{ regEmail }}" onChange="{{ onRegEmail }}" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label>Telephone (required)</label>
+            <input class="input tnum" value="{{ regPhone }}" onChange="{{ onRegPhone }}" placeholder="081 234 5678">
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Shipping address (required)</label>
+            <textarea class="input" value="{{ regAddress }}" onChange="{{ onRegAddress }}" placeholder="House number, street, district, province, postal code"></textarea>
+          </div>
+          <div class="field">
+            <label>Password (required, 6+ characters)</label>
+            <input class="input" type="password" value="{{ regPassword }}" onChange="{{ onRegPassword }}">
+          </div>
+          <div class="field">
+            <label>Confirm password</label>
+            <input class="input" type="password" value="{{ regConfirm }}" onChange="{{ onRegConfirm }}">
+          </div>
+          <sc-if value="{{ regError }}">
+            <div style="grid-column:1 / -1;font-size:12px;color:var(--color-accent-700)">{{ regError }}</div>
+          </sc-if>
+          <div style="grid-column:1 / -1;display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+            <button class="btn btn-secondary" onClick="{{ goLogin }}" type="button">I have an account</button>
+            <button class="btn btn-primary" type="submit">Create account</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isCheckout }}">
+    <main style="max-width:1100px;margin:0 auto;padding:40px 24px 90px">
+      <button class="btn btn-ghost" onClick="{{ goCart }}" style="margin-bottom:20px">&#8592; Cart</button>
+      <div data-col2 style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:52px;align-items:start">
+        <form onSubmit="{{ onPay }}" style="display:flex;flex-direction:column;gap:16px">
+          <div>
+            <h1 data-enter style="font-size:34px;font-weight:400;margin:0 0 6px">Payment</h1>
+            <p style="font-size:13px;opacity:0.6;margin:0">Credit card only — no other method is accepted for insured collectibles.</p>
+            <p style="font-size:12px;opacity:0.55;margin:8px 0 0;max-width:52ch">Demo build: the card is checked in the browser and never stored or sent anywhere. Connect a real gateway (Omise, Stripe) before taking live payments.</p>
+          </div>
+          <div data-formgrid style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+            <div class="field" style="grid-column:1 / -1">
+              <label>Name on card</label>
+              <input class="input" value="{{ cardName }}" onChange="{{ onCardName }}" placeholder="As printed on the card">
+            </div>
+            <div class="field" style="grid-column:1 / -1">
+              <label>Card number</label>
+              <input class="input tnum" value="{{ cardNumber }}" onChange="{{ onCardNumber }}" placeholder="0000 0000 0000 0000" inputMode="numeric">
+            </div>
+            <div class="field">
+              <label>Expiry (MM/YY)</label>
+              <input class="input tnum" value="{{ cardExp }}" onChange="{{ onCardExp }}" placeholder="04/29">
+            </div>
+            <div class="field">
+              <label>Security code</label>
+              <input class="input tnum" value="{{ cardCvc }}" onChange="{{ onCardCvc }}" placeholder="123">
+            </div>
+          </div>
+          <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:22px">
+            <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px">Shipping to</div>
+            <div style="font-family:var(--font-heading);font-size:18px">{{ userName }}</div>
+            <div style="font-size:13px;opacity:0.8;white-space:pre-line;margin-top:4px">{{ userAddress }}</div>
+            <div class="tnum" style="font-size:13px;opacity:0.8">{{ userPhone }} — {{ userEmail }}</div>
+          </div>
+          <sc-if value="{{ payError }}">
+            <div style="font-size:12px;color:var(--color-accent-700)">{{ payError }}</div>
+          </sc-if>
+          <button class="btn btn-primary btn-block" type="submit">Pay {{ cartTotal }}</button>
+        </form>
+        <aside style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:22px">
+          <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:12px">Order</div>
+          <table class="table tnum">
+            <tbody>
+              <sc-for list="{{ cartLines }}" as="l" hint-placeholder-count="2">
+                <tr>
+                  <td>
+                    <div style="font-family:var(--font-heading);font-size:15px">{{ l.name }}</div>
+                    <div class="tnum" style="font-size:11px;opacity:0.55">{{ l.qty }} × {{ l.priceLabel }}</div>
+                  </td>
+                  <td style="text-align:right">{{ l.totalLabel }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div class="tnum" style="display:flex;justify-content:space-between;font-size:13px;margin-top:14px"><span style="opacity:0.7">Subtotal</span><span>{{ cartSubtotal }}</span></div>
+          <div class="tnum" style="display:flex;justify-content:space-between;font-size:13px"><span style="opacity:0.7">Insured carriage</span><span>{{ cartShipping }}</span></div>
+          <div class="tnum" style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--color-divider);margin-top:10px;padding-top:10px">
+            <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7">Due now</span>
+            <span style="font-family:var(--font-heading);font-size:24px">{{ cartTotal }}</span>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isDone }}">
+    <main style="max-width:680px;margin:0 auto;padding:90px 24px 120px;text-align:center">
+      <div data-enter style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)">Order placed</div>
+      <h1 data-enter style="font-size:42px;font-weight:400;margin:14px 0 12px;animation-delay:.08s">Thank you, {{ userName }}</h1>
+      <p class="tnum" style="font-size:14px;opacity:0.8">Reference {{ orderRef }} — charged {{ orderTotal }} to the card ending {{ orderCard }}.</p>
+      <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:20px;text-align:left;margin:22px 0 18px">
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Confirmation email sent</div>
+        <div style="font-size:14px">To <strong>{{ userEmail }}</strong> — subject “ToyHub order {{ orderRef }} confirmed”.</div>
+        <p style="font-size:13px;opacity:0.7;margin:8px 0 12px">It lists each piece, how it was settled (deposit or in full), the shipping window and the card ending {{ orderCard }}.</p>
+        <div style="border-top:1px solid var(--color-divider);padding-top:12px;font-size:13px;opacity:0.75">A second email follows when the order leaves the bench, carrying its tracking number — at that point the order reads <em>Completed</em>. Anything unclear, <button class="lnk" onClick="{{ goContact }}" style="color:var(--color-accent-700)">contact the shop</button>.</div>
+      </div>
+      <button class="btn btn-primary" onClick="{{ goShop }}" style="margin-top:14px">Back to the catalogue</button>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ draftOpen }}">
+    <div class="dialog-backdrop" style="overflow:auto;align-items:start;padding-block:48px">
+      <div class="dialog" data-enter style="width:min(660px,100%)">
+        <div class="dialog-title">{{ draftTitle }}</div>
+        <div data-formgrid style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+          <div class="field" style="grid-column:1 / -1">
+            <label>Piece name</label>
+            <input class="input" value="{{ draftName }}" onChange="{{ onDraftName }}" placeholder="Vigil of the Lantern Keeper">
+          </div>
+          <div class="field">
+            <label>Atelier</label>
+            <input class="input" value="{{ draftLineV }}" onChange="{{ onDraftLine }}" placeholder="Kestrel Studio">
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select class="input" value="{{ draftCategory }}" onChange="{{ onDraftCategory }}">
+              <option value="Figures">Figures</option>
+              <option value="Statues">Statues</option>
+              <option value="Busts">Busts</option>
+              <option value="Dioramas">Dioramas</option>
+              <option value="Accessories">Accessories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Scale</label>
+            <input class="input" value="{{ draftScale }}" onChange="{{ onDraftScale }}" placeholder="1/6">
+          </div>
+          <div class="field">
+            <label>Price (THB)</label>
+            <input class="input tnum" type="number" min="0" step="100" value="{{ draftPrice }}" onChange="{{ onDraftPrice }}">
+          </div>
+          <div class="field">
+            <label>Availability</label>
+            <select class="input" value="{{ draftStatus }}" onChange="{{ onDraftStatus }}">
+              <option value="In stock">In stock</option>
+              <option value="Pre-order">Pre-order</option>
+              <option value="Sold out">Sold out</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Shipping window</label>
+            <input class="input" value="{{ draftRelease }}" onChange="{{ onDraftRelease }}" placeholder="Q1 2027">
+          </div>
+          <div class="field">
+            <label>Edition</label>
+            <input class="input" value="{{ draftEdition }}" onChange="{{ onDraftEdition }}" placeholder="Edition of 500">
+          </div>
+          <div class="field">
+            <label>Featured in the homepage hero (max 4)</label>
+            <select class="input" value="{{ draftFeatured }}" onChange="{{ onDraftFeatured }}">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Units in stock</label>
+            <input class="input tnum" type="number" min="0" step="1" value="{{ draftStock }}" onChange="{{ onDraftStock }}">
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Photographs — one image address per line, first is the cover</label>
+            <textarea class="input" value="{{ draftImages }}" onChange="{{ onDraftImages }}" placeholder="https://…/front.jpg"></textarea>
+          </div>
+          <div class="field" style="grid-column:1 / -1">
+            <label>Description</label>
+            <textarea class="input" value="{{ draftDesc }}" onChange="{{ onDraftDesc }}" placeholder="Bench notes, materials, what ships in the box."></textarea>
+          </div>
+        </div>
+        <sc-if value="{{ draftError }}">
+          <div style="font-size:12px;color:var(--color-accent-700)">A piece needs a name before it can be saved.</div>
+        </sc-if>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ onDraftCancel }}">Cancel</button>
+          <button class="btn btn-primary" onClick="{{ onDraftSave }}">Save piece</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="animation:toastIn .3s cubic-bezier(.2,.7,.2,1) both;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:40;background:var(--color-neutral-900);color:var(--color-neutral-100);padding:10px 18px;border-radius:var(--radius-md);font-size:13px;box-shadow:var(--shadow-md)">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const KEY_P = 'toyhub.products.v1', KEY_C = 'toyhub.cart.v1';
+const KEY_U = 'toyhub.users.v1', KEY_S = 'toyhub.session.v1', KEY_T = 'toyhub.theme.v1';
+const KEY_O = 'toyhub.orders.v1', KEY_W = 'toyhub.wishlist.v1';
+const KEY_MODE = 'toyhub.paymode.v1', KEY_MSG = 'toyhub.messages.v1';
+const DEPOSIT_PCT = 30;
+const CARRIAGE = 890;
+const MAX_FEATURED = 4;
+
+const hash = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h * 16777619) >>> 0; } return h; };
+const pickRandom = (list, n, seed) => list.slice().sort((a, b) => hash(a.id + seed) - hash(b.id + seed)).slice(0, n);
+const featuredOrder = (list) => list.filter(p => p.featured).sort((a, b) => (a.featuredAt || 0) - (b.featuredAt || 0));
+const imgsOf = (p) => (p.images && p.images.length ? p.images : (p.image ? [p.image] : [])).filter(Boolean);
+const stockOf = (p) => (p.stock == null ? (p.status === 'Sold out' ? 0 : 5) : Number(p.stock));
+const migrate = (list) => (list || []).map(p => {
+  const seed = SEED.find(x => x.id === p.id);
+  return Object.assign({}, p, {
+    images: p.images && p.images.length ? p.images : (p.image ? [p.image] : []),
+    stock: p.stock == null ? (p.status === 'Sold out' ? 0 : (seed ? seed.stock : 5)) : Number(p.stock),
+    depositPct: undefined
+  });
+});
+const depositOf = (p) => Math.round(Number(p.price) * DEPOSIT_PCT / 100);
+const dueOf = (p, mode) => (p.status === 'Pre-order' && mode !== 'full' ? depositOf(p) : Number(p.price));
+const soldOutOf = (p) => p.status === 'Sold out' || stockOf(p) <= 0;
+const url = (u) => (u ? 'url("' + u + '")' : 'none');
+
+const SEED_USERS = [
+  { email: 'admin@toyhub.co', password: 'admin1234', name: 'Shop Administrator', phone: '02 000 0000', address: 'ToyHub, second floor bench', role: 'admin' }
+];
+
+const SEED = [
+  { id: 'p1', name: 'Vigil of the Lantern Keeper', line: 'Kestrel Studio', category: 'Statues', scale: '1/4', price: 24900, status: 'Pre-order', release: 'Nov 2026', edition: 'Edition of 300', featured: true, images: [], stock: 12, depositPct: 25, desc: 'Resin statue on a cast base, hand-finished lantern glass. Bench notes and materials to be written in.' },
+  { id: 'p2', name: 'Hoplite of the Ninth', line: 'Arcadia Forge', category: 'Figures', scale: '1/6', price: 12900, status: 'In stock', release: '', edition: 'Edition of 800', featured: true, images: [], stock: 6, depositPct: 30, desc: 'Articulated figure with fabric cloak, two head sculpts and a display stand.' },
+  { id: 'p3', name: 'Kitsune, Winter Shrine', line: 'Nihon Atelier', category: 'Statues', scale: '1/7', price: 18500, status: 'Pre-order', release: 'Feb 2027', edition: 'Edition of 500', featured: true, images: [], stock: 20, depositPct: 30, desc: 'Cold-cast statue with snow-glazed base and removable torii element.' },
+  { id: 'p4', name: 'Anatomical Study No. 4', line: 'Verrocchio Works', category: 'Busts', scale: '1/3', price: 9800, status: 'In stock', release: '', edition: 'Open edition', featured: false, images: [], stock: 3, depositPct: 30, desc: 'Plaster-finish bust on a walnut plinth.' },
+  { id: 'p5', name: 'Deep Field Cosmonaut', line: 'Northlight', category: 'Figures', scale: '1/6', price: 14200, status: 'In stock', release: '', edition: 'Edition of 600', featured: true, images: [], stock: 8, depositPct: 30, desc: 'Weathered suit finish, magnetic tether accessories, lit visor option.' },
+  { id: 'p6', name: "The Cartographer's Desk", line: 'Sable & Crane', category: 'Dioramas', scale: '1/12', price: 21600, status: 'Pre-order', release: 'Dec 2026', edition: 'Edition of 200', featured: false, images: [], stock: 5, depositPct: 35, desc: 'Furnished diorama with brass instruments and printed chart sheets.' },
+  { id: 'p7', name: 'Ronin, Ash Season', line: 'Arcadia Forge', category: 'Figures', scale: '1/6', price: 13400, status: 'Sold out', release: '', edition: 'Edition of 400', featured: false, images: [], stock: 0, depositPct: 30, desc: 'Sold through. A second run has not been announced.' },
+  { id: 'p8', name: 'Marble Sentinel', line: 'Kestrel Studio', category: 'Busts', scale: '1/2', price: 11200, status: 'In stock', release: '', edition: 'Edition of 250', featured: false, images: [], stock: 4, depositPct: 30, desc: 'Stone-effect bust, 34 cm tall, felted underside.' },
+  { id: 'p9', name: 'Orbital Dock Diorama', line: 'Northlight', category: 'Dioramas', scale: '1/24', price: 27400, status: 'Pre-order', release: 'Apr 2027', edition: 'Edition of 150', featured: false, images: [], stock: 9, depositPct: 40, desc: 'Lit diorama with etched panels and a hinged service arm.' },
+  { id: 'p10', name: 'Tea House in Rain', line: 'Nihon Atelier', category: 'Dioramas', scale: '1/12', price: 16800, status: 'In stock', release: '', edition: 'Edition of 350', featured: false, images: [], stock: 2, depositPct: 30, desc: 'Rain-effect acrylic canopy, warm interior lighting.' },
+  { id: 'p11', name: 'Display Cloche, Walnut', line: 'Sable & Crane', category: 'Accessories', scale: '—', price: 4200, status: 'In stock', release: '', edition: 'Open edition', featured: false, images: [], stock: 15, depositPct: 30, desc: 'Glass cloche on a turned walnut base for 1/6 figures.' },
+  { id: 'p12', name: 'Brass Nameplate Set', line: 'Verrocchio Works', category: 'Accessories', scale: '—', price: 1900, status: 'In stock', release: '', edition: 'Open edition', featured: false, images: [], stock: 40, depositPct: 30, desc: 'Six engravable plates with pins, for shelf labelling.' }
+];
+
+const CATS = ['Figures', 'Statues', 'Busts', 'Dioramas', 'Accessories'];
+const STATUSES = ['In stock', 'Pre-order', 'Sold out'];
+const ACCENT = 'var(--color-accent-700)';
+const INK = 'var(--color-text)';
+
+const money = (n) => '฿' + Number(n || 0).toLocaleString('en-US');
+const load = (k, fb) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? fb : v; } catch (e) { return fb; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const dateLabel = (t) => new Date(t).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+class Component extends DCLogic {
+  state = {
+    route: 'home', pid: null, heroI: 0, pdImgI: 0,
+    products: SEED, cart: {}, mode: {}, orders: [], wish: {}, messages: [],
+    contact: { name: '', email: '', subject: 'An order or tracking', ref: '', body: '' }, cError: '', cSent: '',
+    q: '', cat: 'All', status: 'All', maxPrice: 30000, sort: 'curated',
+    draft: null, draftError: false, toast: '', adminTab: 'catalogue',
+    users: SEED_USERS, session: null,
+    auth: { email: '', password: '' }, authError: '',
+    reg: { name: '', email: '', phone: '', address: '', password: '', confirm: '' }, regError: '',
+    card: { name: '', number: '', exp: '', cvc: '' }, payError: '',
+    order: null, theme: 'light', seed: String(Math.random())
+  };
+
+  componentDidMount() {
+    this.setState({
+      products: migrate(load(KEY_P, SEED)), cart: load(KEY_C, {}), users: load(KEY_U, SEED_USERS),
+      session: load(KEY_S, null), theme: load(KEY_T, 'light'),
+      orders: load(KEY_O, []), wish: load(KEY_W, {}),
+      mode: load(KEY_MODE, {}), messages: load(KEY_MSG, [])
+    });
+    this.timer = setInterval(() => this.setState(s => ({ heroI: s.heroI + 1 })), 7000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); if (this.tt) clearTimeout(this.tt); }
+
+  go(route, pid) { this.setState({ route, pid: pid || null, pdImgI: 0 }); window.scrollTo(0, 0); }
+  scrollTo(id) {
+    this.setState({ route: 'home' });
+    setTimeout(() => { const el = document.getElementById(id); if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 80); }, 60);
+  }
+  flash(msg) {
+    this.setState({ toast: msg });
+    if (this.tt) clearTimeout(this.tt);
+    this.tt = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+  setProducts(list) { this.setState({ products: list }); save(KEY_P, list); }
+  setCart(c) { this.setState({ cart: c }); save(KEY_C, c); }
+  setUsers(u) { this.setState({ users: u }); save(KEY_U, u); }
+  setSession(e) { this.setState({ session: e }); save(KEY_S, e); }
+  setOrders(o) { this.setState({ orders: o }); save(KEY_O, o); }
+  setWish(w) { this.setState({ wish: w }); save(KEY_W, w); }
+  setMode(m) { this.setState({ mode: m }); save(KEY_MODE, m); }
+  setMessages(m) { this.setState({ messages: m }); save(KEY_MSG, m); }
+  modeOf(p) { return p.status === 'Pre-order' ? (this.state.mode[p.id] === 'full' ? 'full' : 'deposit') : 'full'; }
+  me() { return this.state.users.find(u => u.email === this.state.session) || null; }
+  isAdmin() { const m = this.me(); return !!m && m.role === 'admin'; }
+  myWish() { const m = this.me(); return (m && this.state.wish[m.email]) || []; }
+  toggleWish(p) {
+    const m = this.me();
+    if (!m) { this.go('login'); this.flash('Sign in to save pieces'); return; }
+    if (m.role === 'admin') { this.flash('Saved pieces belong to member accounts — see the Demand tab'); return; }
+    const cur = this.state.wish[m.email] || [];
+    const has = cur.indexOf(p.id) > -1;
+    const next = Object.assign({}, this.state.wish);
+    next[m.email] = has ? cur.filter(x => x !== p.id) : cur.concat([p.id]);
+    this.setWish(next);
+    this.flash(has ? p.name + ' removed from saved pieces'
+      : (soldOutOf(p) ? 'We will email you if ' + p.name + ' returns' : p.name + ' saved'));
+  }
+  field(group, k) {
+    return (e) => {
+      const v = e.target.value;
+      this.setState(st => ({ [group]: Object.assign({}, st[group], { [k]: v }) }));
+    };
+  }
+  add(p, payMode) {
+    if (this.isAdmin()) { this.flash('Administrator accounts cannot place orders'); return; }
+    if (!this.me()) { this.go('login'); this.flash('Sign in to reserve a piece'); return; }
+    if (soldOutOf(p)) { this.flash(p.name + ' is sold out — save it to be notified'); return; }
+    const inCart = this.state.cart[p.id] || 0;
+    if (inCart >= stockOf(p)) { this.flash('Only ' + stockOf(p) + ' left of ' + p.name); return; }
+    const c = Object.assign({}, this.state.cart);
+    c[p.id] = inCart + 1;
+    this.setCart(c);
+    if (p.status === 'Pre-order') {
+      const m = Object.assign({}, this.state.mode);
+      m[p.id] = payMode === 'full' ? 'full' : 'deposit';
+      this.setMode(m);
+      this.flash(p.name + (payMode === 'full' ? ' reserved, paid in full' : ' reserved on a ' + DEPOSIT_PCT + '% deposit'));
+      return;
+    }
+    this.flash(p.name + ' added to the cart');
+  }
+
+  card(p) {
+    const wished = this.myWish().indexOf(p.id) > -1;
+    const out = soldOutOf(p);
+    return {
+      id: p.id, name: p.name, line: p.line, status: p.status,
+      hasImage: imgsOf(p).length > 0, noImage: imgsOf(p).length === 0,
+      bg: url(imgsOf(p)[0]),
+      priceLabel: money(p.price),
+      scaleLabel: p.scale && p.scale !== '—' ? p.scale : p.category,
+      short: (p.desc || '').slice(0, 96),
+      stockNote: out ? 'Sold out — you are on the notify list.' : stockOf(p) + ' available' + (p.status === 'Pre-order' ? ' to reserve' : ''),
+      soldOut: out || this.isAdmin(),
+      addLabel: this.isAdmin() ? 'Staff' : (out ? 'Sold out' : (p.status === 'Pre-order' ? 'Reserve' : 'Add')),
+      wishGlyph: wished ? '♥' : '♡',
+      onWish: () => this.toggleWish(p),
+      onOpen: () => this.go('product', p.id),
+      onAdd: () => this.add(p)
+    };
+  }
+
+  filtered() {
+    const s = this.state;
+    const q = s.q.trim().toLowerCase();
+    let list = s.products.filter(p =>
+      (s.cat === 'All' || p.category === s.cat) &&
+      (s.status === 'All' || p.status === s.status) &&
+      Number(p.price) <= Number(s.maxPrice) &&
+      (!q || (p.name + ' ' + p.line + ' ' + p.category).toLowerCase().includes(q))
+    );
+    if (s.sort === 'low') list = list.slice().sort((a, b) => a.price - b.price);
+    if (s.sort === 'high') list = list.slice().sort((a, b) => b.price - a.price);
+    if (s.sort === 'new') list = list.slice().reverse();
+    return list;
+  }
+
+  draftField(k) {
+    return (e) => {
+      const v = e.target.value;
+      this.setState(st => ({ draft: Object.assign({}, st.draft, { [k]: v }) }));
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const products = s.products;
+    const feat = featuredOrder(products);
+    const heroPool = (feat.length ? feat : products).slice(0, MAX_FEATURED);
+    const hero = heroPool.length ? heroPool[s.heroI % heroPool.length] : null;
+    const cartIds = Object.keys(s.cart).filter(id => s.cart[id] > 0);
+    const lines = cartIds.map(id => products.find(p => p.id === id)).filter(Boolean);
+    const subtotal = lines.reduce((t, p) => t + dueOf(p, this.modeOf(p)) * s.cart[p.id], 0);
+    const balance = lines.reduce((t, p) => t + (Number(p.price) - dueOf(p, this.modeOf(p))) * s.cart[p.id], 0);
+    const shipsNow = lines.some(p => this.modeOf(p) === 'full');
+    const shipping = shipsNow ? CARRIAGE : 0;
+    const total = subtotal + shipping;
+    const pd = products.find(p => p.id === s.pid) || null;
+    const pdImages = pd ? imgsOf(pd) : [];
+    const shop = this.filtered();
+    const prices = products.map(p => Number(p.price) || 0);
+    const draft = s.draft;
+    const me = this.me();
+    const admin = !!me && me.role === 'admin';
+    const canBuy = !admin;
+    const wishIds = this.myWish();
+    const myOrders = me ? s.orders.filter(o => o.email === me.email).slice().reverse() : [];
+    const demand = products.map(p => {
+      const count = Object.keys(s.wish).reduce((t, k) => t + ((s.wish[k] || []).indexOf(p.id) > -1 ? 1 : 0), 0);
+      return { p: p, count: count };
+    }).filter(r => r.count > 0).sort((a, b) => b.count - a.count);
+
+    const filterRow = (label, count, active, onClick) => ({ label, count, onClick, color: active ? ACCENT : INK });
+    const tab = (key, label) => ({
+      label, onClick: () => this.setState({ adminTab: key }),
+      color: s.adminTab === key ? ACCENT : INK,
+      border: s.adminTab === key ? 'var(--color-accent)' : 'transparent'
+    });
+
+    return {
+      goHome: () => this.go('home'), goShop: () => this.go('shop'), goCart: () => this.go('cart'),
+      goAdmin: () => this.go('admin'), goOrders: () => this.go('orders'), goWishlist: () => this.go('wishlist'),
+      goStory: () => this.scrollTo('story'), goContact: () => this.go('contact'),
+      tabContact: s.route === 'contact' ? ACCENT : INK,
+      tabHome: s.route === 'home' ? ACCENT : INK,
+      tabShop: s.route === 'shop' || s.route === 'product' ? ACCENT : INK,
+      tabAdmin: s.route === 'admin' ? ACCENT : INK,
+      tabOrders: s.route === 'orders' ? ACCENT : INK,
+      tabWish: s.route === 'wishlist' ? ACCENT : INK,
+      isHome: s.route === 'home', isShop: s.route === 'shop', isProduct: s.route === 'product' && !!pd,
+      isCart: s.route === 'cart' && canBuy, isAdmin: s.route === 'admin' && admin,
+      isLogin: s.route === 'login' || (s.route === 'admin' && !admin) || ((s.route === 'orders' || s.route === 'wishlist') && !me),
+      isSignup: s.route === 'signup', isContact: s.route === 'contact',
+      isCheckout: s.route === 'checkout' && lines.length > 0 && canBuy && !!me,
+      isDone: s.route === 'done' && !!s.order,
+      isOrders: s.route === 'orders' && !!me && !admin,
+      isWishlist: s.route === 'wishlist' && !!me && !admin,
+      cartCount: cartIds.reduce((t, id) => t + s.cart[id], 0),
+      productCount: products.length,
+      toast: s.toast,
+
+      signedIn: !!me, signedOut: !me, isAdminUser: admin, notAdminUser: !admin,
+      storyCaption: admin ? 'The bench, second floor — drop a replacement photograph here.' : 'The bench, second floor.', canBuy: canBuy, isMember: !!me && !admin,
+      wishCount: wishIds.length,
+      userName: me ? me.name : '', userEmail: me ? me.email : '',
+      userPhone: me ? me.phone : '', userAddress: me ? me.address : '',
+      userRoleLabel: admin ? 'Administrator' : 'Member',
+      goLogin: () => this.go('login'), goSignup: () => this.go('signup'),
+      onSignOut: () => { this.setSession(null); this.go('home'); this.flash('Signed out'); },
+
+      authEmail: s.auth.email, authPassword: s.auth.password, authError: s.authError,
+      onAuthEmail: this.field('auth', 'email'), onAuthPassword: this.field('auth', 'password'),
+      onLoginSubmit: (e) => {
+        e.preventDefault();
+        const u = s.users.find(x => x.email.trim().toLowerCase() === s.auth.email.trim().toLowerCase());
+        if (!u || u.password !== s.auth.password) { this.setState({ authError: 'That email and password do not match an account.' }); return; }
+        this.setSession(u.email);
+        this.setState({ authError: '', auth: { email: '', password: '' } });
+        this.go(u.role === 'admin' ? 'admin' : 'shop');
+        this.flash('Signed in as ' + u.name);
+      },
+
+      regName: s.reg.name, regEmail: s.reg.email, regPhone: s.reg.phone,
+      regAddress: s.reg.address, regPassword: s.reg.password, regConfirm: s.reg.confirm,
+      regError: s.regError,
+      onRegName: this.field('reg', 'name'), onRegEmail: this.field('reg', 'email'),
+      onRegPhone: this.field('reg', 'phone'), onRegAddress: this.field('reg', 'address'),
+      onRegPassword: this.field('reg', 'password'), onRegConfirm: this.field('reg', 'confirm'),
+      onSignupSubmit: (e) => {
+        e.preventDefault();
+        const r = s.reg;
+        const err = !r.name.trim() ? 'A full name is required.'
+          : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.email.trim()) ? 'A valid email address is required.'
+          : r.phone.replace(/\D/g, '').length < 9 ? 'A telephone number is required.'
+          : !r.address.trim() ? 'A shipping address is required.'
+          : r.password.length < 6 ? 'The password needs at least six characters.'
+          : r.password !== r.confirm ? 'The two passwords do not match.'
+          : s.users.some(u => u.email.trim().toLowerCase() === r.email.trim().toLowerCase()) ? 'An account already uses that email.'
+          : '';
+        if (err) { this.setState({ regError: err }); return; }
+        const u = { email: r.email.trim(), password: r.password, name: r.name.trim(), phone: r.phone.trim(), address: r.address.trim(), role: 'user' };
+        this.setUsers(s.users.concat([u]));
+        this.setSession(u.email);
+        this.setState({ regError: '', reg: { name: '', email: '', phone: '', address: '', password: '', confirm: '' } });
+        this.go('shop');
+        this.flash('Welcome, ' + u.name);
+      },
+
+      cardName: s.card.name, cardNumber: s.card.number, cardExp: s.card.exp, cardCvc: s.card.cvc,
+      onCardName: this.field('card', 'name'), onCardNumber: this.field('card', 'number'),
+      onCardExp: this.field('card', 'exp'), onCardCvc: this.field('card', 'cvc'),
+      payError: s.payError,
+      onPay: (e) => {
+        e.preventDefault();
+        const c = s.card;
+        const digits = c.number.replace(/\D/g, '');
+        const err = !c.name.trim() ? 'The name on the card is required.'
+          : digits.length < 15 ? 'Enter the full card number.'
+          : !/^(0[1-9]|1[0-2])\/\d{2}$/.test(c.exp.trim()) ? 'Enter the expiry as MM/YY.'
+          : !/^\d{3,4}$/.test(c.cvc.trim()) ? 'Enter the 3-digit security code.'
+          : '';
+        if (err) { this.setState({ payError: err }); return; }
+        const items = lines.map(p => {
+          const md = this.modeOf(p);
+          return {
+            id: p.id, name: p.name, qty: s.cart[p.id], price: Number(p.price),
+            due: dueOf(p, md), mode: md, status: p.status, release: p.release || ''
+          };
+        });
+        const order = {
+          ref: 'TH-' + Date.now().toString(36).toUpperCase().slice(-6),
+          email: me.email, name: me.name, phone: me.phone, address: me.address,
+          items: items, subtotal: subtotal, shipping: shipping, total: total, balance: balance,
+          card: digits.slice(-4), at: Date.now(), status: 'Confirmed',
+          tracking: '', confirmedAt: Date.now(), shippedAt: 0
+        };
+        const nextProducts = products.map(p => {
+          const it = items.find(x => x.id === p.id);
+          if (!it) return p;
+          const left = Math.max(0, stockOf(p) - it.qty);
+          return Object.assign({}, p, { stock: left, status: left === 0 ? 'Sold out' : p.status });
+        });
+        this.setProducts(nextProducts);
+        this.setOrders(s.orders.concat([order]));
+        this.setCart({});
+        this.setMode({});
+        this.setState({
+          payError: '', card: { name: '', number: '', exp: '', cvc: '' },
+          order: { ref: order.ref, total: money(total), card: order.card }, route: 'done'
+        });
+        window.scrollTo(0, 0);
+        this.flash('Confirmation email sent to ' + me.email);
+      },
+      orderRef: s.order ? s.order.ref : '', orderTotal: s.order ? s.order.total : '', orderCard: s.order ? s.order.card : '',
+
+      hasMyOrders: myOrders.length > 0, noMyOrders: myOrders.length === 0,
+      myOrders: myOrders.map(o => ({
+        ref: o.ref, date: dateLabel(o.at), status: o.status, card: o.card,
+        totalLabel: money(o.total),
+        hasBalance: (o.balance || 0) > 0, balanceLabel: money(o.balance || 0),
+        items: (o.items || []).map(it => ({
+          label: it.qty + ' × ' + it.name + (it.status === 'Pre-order'
+            ? (it.mode === 'full' ? ' (paid in full, ships ' + (it.release || 'TBA') + ')' : ' (' + DEPOSIT_PCT + '% deposit, ships ' + (it.release || 'TBA') + ')')
+            : ''),
+          dueLabel: money(it.due * it.qty)
+        })),
+        emails: [
+          { mark: '✓', color: ACCENT, title: 'Order confirmed by email',
+            detail: dateLabel(o.confirmedAt || o.at) + ' — sent to ' + o.email },
+          o.tracking
+            ? { mark: '✓', color: ACCENT, title: 'Shipped — tracking emailed',
+                detail: 'Tracking ' + o.tracking + (o.shippedAt ? ' — ' + dateLabel(o.shippedAt) : '') }
+            : { mark: '○', color: 'var(--color-text)', title: 'Tracking email pending',
+                detail: o.status === 'Cancelled' ? 'Order cancelled' : 'Sent the day the piece leaves the bench' }
+        ]
+      })),
+
+      hasWish: wishIds.length > 0, noWish: wishIds.length === 0,
+      wishItems: wishIds.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => this.card(p)),
+
+      heroName: hero ? hero.name : 'No pieces catalogued',
+      heroLine: hero ? hero.line : 'ToyHub',
+      heroDesc: hero ? hero.desc : 'Add your first piece from the Admin screen.',
+      heroPrice: hero ? money(hero.price) : '',
+      heroStatus: hero ? hero.status : '',
+      heroNum: String((s.heroI % Math.max(heroPool.length, 1)) + 1).padStart(2, '0'),
+      heroBg: hero ? url(imgsOf(hero)[0]) : 'none',
+      heroHasImage: !!(hero && imgsOf(hero).length), heroNoImage: !(hero && imgsOf(hero).length),
+      heroOpen: () => hero && this.go('product', hero.id),
+      heroPrev: () => this.setState(st => ({ heroI: st.heroI + heroPool.length - 1 })),
+      heroNext: () => this.setState(st => ({ heroI: st.heroI + 1 })),
+      heroDots: heroPool.map((p, i) => ({
+        bg: i === s.heroI % heroPool.length ? 'var(--color-accent)' : 'var(--color-divider)',
+        onClick: () => this.setState({ heroI: i })
+      })),
+
+      brands: Array.from(new Set(products.map(p => p.line))).map(name => ({ name })),
+      featured: pickRandom(products, 4, s.seed).map(p => this.card(p)),
+      onShuffle: () => this.setState({ seed: String(Math.random()) }),
+      theme: s.theme,
+      themeGlyph: s.theme === 'dark' ? '☀' : '☾',
+      themeLabel: s.theme === 'dark' ? 'Switch to light' : 'Switch to dark',
+      onToggleTheme: () => { const t = s.theme === 'dark' ? 'light' : 'dark'; this.setState({ theme: t }); save(KEY_T, t); },
+      arrivals: products.slice(-3).reverse().map(p => this.card(p)),
+      arrivalCount: String(products.length).padStart(2, '0'),
+
+      query: s.q, onQuery: (e) => this.setState({ q: e.target.value }),
+      sort: s.sort, onSort: (e) => this.setState({ sort: e.target.value }),
+      maxPrice: s.maxPrice, maxPriceLabel: money(s.maxPrice) + ' and under',
+      priceMin: 1000, priceMax: Math.max(30000, Math.max.apply(null, prices.concat([30000]))),
+      onMaxPrice: (e) => this.setState({ maxPrice: Number(e.target.value) }),
+      onClearFilters: () => this.setState({ q: '', cat: 'All', status: 'All', maxPrice: 30000, sort: 'curated' }),
+      catFilters: [filterRow('All pieces', products.length, s.cat === 'All', () => this.setState({ cat: 'All' }))]
+        .concat(CATS.map(c => filterRow(c, products.filter(p => p.category === c).length, s.cat === c, () => this.setState({ cat: c })))),
+      statusFilters: [filterRow('Any', products.length, s.status === 'All', () => this.setState({ status: 'All' }))]
+        .concat(STATUSES.map(st => filterRow(st, products.filter(p => p.status === st).length, s.status === st, () => this.setState({ status: st })))),
+      shopItems: shop.map(p => this.card(p)),
+      shopEmpty: shop.length === 0,
+      resultLabel: shop.length + ' of ' + products.length + ' pieces',
+
+      pdName: pd ? pd.name : '', pdLine: pd ? pd.line : '', pdDesc: pd ? pd.desc : '',
+      pdPrice: pd ? money(pd.price) : '', pdStatus: pd ? pd.status : '',
+      pdBg: pdImages.length ? url(pdImages[Math.min(s.pdImgI, pdImages.length - 1)]) : 'none',
+      pdHasImage: pdImages.length > 0, pdNoImage: !!pd && pdImages.length === 0,
+      pdHasThumbs: pdImages.length > 1,
+      pdThumbs: pdImages.map((src, i) => ({
+        bg: url(src),
+        ring: i === Math.min(s.pdImgI, pdImages.length - 1) ? 'var(--color-accent)' : 'var(--color-divider)',
+        onClick: () => this.setState({ pdImgI: i })
+      })),
+      pdSoldOut: (!!pd && soldOutOf(pd)) || admin,
+      pdAddLabel: admin ? 'Staff account — ordering disabled'
+        : (pd ? (soldOutOf(pd) ? 'Sold out' : (pd.status === 'Pre-order' ? 'Reserve with deposit' : 'Add to cart')) : ''),
+      pdStockLabel: pd ? (soldOutOf(pd) ? 'Sold out — no units left' : stockOf(pd) + ' of this edition left') : '',
+      pdIsPreorder: !!pd && pd.status === 'Pre-order' && !soldOutOf(pd) && canBuy,
+      pdIsStocked: !!pd && (pd.status !== 'Pre-order' || soldOutOf(pd) || admin),
+      pdDepositPct: DEPOSIT_PCT,
+      pdDepositLabel: pd ? money(depositOf(pd)) : '',
+      pdRelease: pd ? (pd.release || 'to be announced') : '',
+      pdEdition: pd ? (pd.edition || 'Open edition') : '',
+      pdBuyNow: () => {
+        if (!pd) return;
+        if (admin) { this.flash('Administrator accounts cannot place orders'); return; }
+        if (!me) { this.go('login'); this.flash('Sign in to buy this piece'); return; }
+        if (soldOutOf(pd)) { this.flash(pd.name + ' is sold out'); return; }
+        if (!s.cart[pd.id]) this.add(pd, pd.status === 'Pre-order' ? 'deposit' : 'full');
+        this.setState({ payError: '' });
+        this.go('checkout');
+      },
+      pdAddDeposit: () => pd && this.add(pd, 'deposit'),
+      pdAddFull: () => pd && this.add(pd, 'full'),
+      pdWishLabel: pd && wishIds.indexOf(pd.id) > -1 ? '♥ Saved' : (pd && soldOutOf(pd) ? '♡ Notify me when back' : '♡ Save this piece'),
+      pdWishToggle: () => pd && this.toggleWish(pd),
+      pdAdd: () => pd && this.add(pd),
+      pdSpecs: pd ? [
+        { k: 'Atelier', v: pd.line }, { k: 'Category', v: pd.category }, { k: 'Scale', v: pd.scale || '—' },
+        { k: 'Edition', v: pd.edition || 'Open edition' },
+        { k: 'Shipping window', v: pd.release || 'Ships now' },
+        { k: 'Units left', v: String(stockOf(pd)) },
+        { k: 'Reference', v: pd.id.toUpperCase() }
+      ] : [],
+      related: pd ? products.filter(p => p.id !== pd.id && p.line === pd.line).concat(products.filter(p => p.id !== pd.id && p.line !== pd.line)).slice(0, 4).map(p => this.card(p)) : [],
+
+      cartLines: lines.map(p => {
+        const md = this.modeOf(p);
+        const dep = md === 'deposit' && p.status === 'Pre-order';
+        const setLineMode = (v) => () => { const m = Object.assign({}, s.mode); m[p.id] = v; this.setMode(m); };
+        return {
+        name: p.name, line: p.line, status: p.status, qty: s.cart[p.id],
+        priceLabel: money(p.price),
+        isPreorder: p.status === 'Pre-order',
+        depColor: dep ? ACCENT : INK, depBorder: dep ? 'var(--color-accent)' : 'transparent',
+        fullColor: dep ? INK : ACCENT, fullBorder: dep ? 'transparent' : 'var(--color-accent)',
+        onDeposit: setLineMode('deposit'), onFull: setLineMode('full'),
+        noteLabel: p.status === 'Pre-order'
+          ? (dep ? DEPOSIT_PCT + '% deposit of ' + money(p.price) : 'paid in full, ' + money(p.price))
+          : money(p.price),
+        totalLabel: money(dueOf(p, md) * s.cart[p.id]),
+        onOpen: () => this.go('product', p.id),
+        onInc: () => {
+          if ((s.cart[p.id] || 0) >= stockOf(p)) { this.flash('Only ' + stockOf(p) + ' left of ' + p.name); return; }
+          const c = Object.assign({}, s.cart); c[p.id] = c[p.id] + 1; this.setCart(c);
+        },
+        onDec: () => { const c = Object.assign({}, s.cart); c[p.id] = Math.max(0, c[p.id] - 1); if (!c[p.id]) delete c[p.id]; this.setCart(c); },
+        onRemove: () => { const c = Object.assign({}, s.cart); delete c[p.id]; this.setCart(c); }
+      }; }),
+      cartHasLines: lines.length > 0, cartEmpty: lines.length === 0,
+      cartCarriageLater: lines.length > 0 && !shipsNow,
+      cartSubtotal: money(subtotal), cartShipping: shipping ? money(shipping) : '—',
+      cartHasBalance: balance > 0, cartBalance: money(balance),
+      cartTotal: money(total),
+      onCheckout: () => {
+        if (!me) { this.go('login'); this.flash('Sign in to check out'); return; }
+        if (admin) { this.flash('Administrator accounts cannot place orders'); return; }
+        this.setState({ payError: '' });
+        this.go('checkout');
+      },
+
+      adminTitle: s.adminTab === 'orders' ? 'Orders'
+        : (s.adminTab === 'demand' ? 'Demand' : (s.adminTab === 'messages' ? 'Enquiries' : 'Catalogue manager')),
+      adminTabs: [tab('catalogue', 'Catalogue'), tab('orders', 'Orders (' + s.orders.length + ')'),
+        tab('messages', 'Enquiries (' + s.messages.filter(m => !m.handled).length + ')'), tab('demand', 'Demand')],
+      adminIsCatalogue: s.adminTab === 'catalogue', adminIsOrders: s.adminTab === 'orders',
+      adminIsDemand: s.adminTab === 'demand', adminIsMessages: s.adminTab === 'messages',
+      adminHasMessages: s.messages.length > 0, adminNoMessages: s.messages.length === 0,
+      adminMessages: s.messages.slice().reverse().map(m => ({
+        subject: m.subject + (m.ref ? ' — ' + m.ref : ''), name: m.name, email: m.email,
+        date: dateLabel(m.at), body: m.body,
+        state: m.handled ? 'Answered' : 'Open',
+        toggleLabel: m.handled ? 'Reopen' : 'Mark answered',
+        onToggle: () => this.setMessages(s.messages.map(x => (x.id === m.id ? Object.assign({}, x, { handled: !x.handled }) : x))),
+        onDelete: () => this.setMessages(s.messages.filter(x => x.id !== m.id))
+      })),
+
+      cName: s.contact.name, cEmail: s.contact.email, cSubject: s.contact.subject,
+      cRef: s.contact.ref, cBody: s.contact.body, cError: s.cError, cSent: s.cSent, cSentTo: s.cSent,
+      onCName: this.field('contact', 'name'), onCEmail: this.field('contact', 'email'),
+      onCSubject: this.field('contact', 'subject'), onCRef: this.field('contact', 'ref'),
+      onCBody: this.field('contact', 'body'),
+      onContactSubmit: (e) => {
+        e.preventDefault();
+        const c = s.contact;
+        const err = !c.name.trim() ? 'Please give a name we can reply to.'
+          : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email.trim()) ? 'A valid email address is required.'
+          : c.body.trim().length < 10 ? 'Tell us a little more so we can help.'
+          : '';
+        if (err) { this.setState({ cError: err, cSent: '' }); return; }
+        const msg = {
+          id: 'm' + Date.now().toString(36), name: c.name.trim(), email: c.email.trim(),
+          subject: c.subject, ref: c.ref.trim(), body: c.body.trim(), at: Date.now(), handled: false
+        };
+        this.setMessages(s.messages.concat([msg]));
+        this.setState({
+          cError: '', cSent: msg.email,
+          contact: { name: '', email: '', subject: 'An order or tracking', ref: '', body: '' }
+        });
+        this.flash('Message sent — the shop replies to ' + msg.email);
+      },
+      adminHasOrders: s.orders.length > 0, adminNoOrders: s.orders.length === 0,
+      adminOrders: s.orders.slice().reverse().map(o => ({
+        ref: o.ref, date: dateLabel(o.at), card: o.card, name: o.name, email: o.email, phone: o.phone,
+        itemsLabel: (o.items || []).map(it => it.qty + ' × ' + it.name + (it.mode === 'deposit' ? ' (deposit)' : '')).join('\n'),
+        totalLabel: money(o.total), status: o.status, tracking: o.tracking || '',
+        shipLabel: o.tracking ? 'Re-send tracking' : 'Send tracking & complete',
+        onStatus: (e) => {
+          const v = e.target.value;
+          this.setOrders(s.orders.map(x => (x.ref === o.ref ? Object.assign({}, x, { status: v }) : x)));
+          this.flash(o.ref + ' — ' + v);
+        },
+        onTracking: (e) => {
+          const v = e.target.value;
+          this.setOrders(s.orders.map(x => (x.ref === o.ref ? Object.assign({}, x, { tracking: v }) : x)));
+        },
+        onShip: () => {
+          const cur = s.orders.find(x => x.ref === o.ref);
+          const tr = (cur && cur.tracking || '').trim();
+          if (!tr) { this.flash('Enter a tracking number first'); return; }
+          this.setOrders(s.orders.map(x => (x.ref === o.ref
+            ? Object.assign({}, x, { tracking: tr, status: 'Completed', shippedAt: Date.now() }) : x)));
+          this.flash('Tracking ' + tr + ' emailed to ' + o.email + ' — ' + o.ref + ' completed');
+        },
+        onDelete: () => { this.setOrders(s.orders.filter(x => x.ref !== o.ref)); this.flash(o.ref + ' deleted'); }
+      })),
+      adminHasDemand: demand.length > 0, adminNoDemand: demand.length === 0,
+      demandRows: demand.map(r => ({
+        name: r.p.name, status: r.p.status, stockLabel: String(stockOf(r.p)), count: r.count,
+        onEdit: () => this.setState({ draft: Object.assign({}, r.p), draftError: false })
+      })),
+
+      adminRows: products.map(p => ({
+        name: p.name, line: p.line, category: p.category, status: p.status,
+        priceLabel: money(p.price), stockLabel: String(stockOf(p)),
+        featuredLabel: p.featured ? 'Featured in the hero' : (p.edition || 'Open edition'),
+        photoLabel: imgsOf(p).length ? imgsOf(p).length + ' set' : 'Pending',
+        onEdit: () => this.setState({ draft: Object.assign({}, p), draftError: false }),
+        onDelete: () => {
+          this.setProducts(products.filter(x => x.id !== p.id));
+          const c = Object.assign({}, s.cart); delete c[p.id]; this.setCart(c);
+          this.flash(p.name + ' removed');
+        }
+      })),
+      onNew: () => this.setState({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: '', category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', edition: '', featured: false, images: [], stock: 5, desc: '' } }),
+      onRestore: () => { this.setProducts(SEED); this.flash('Sample catalogue restored'); },
+
+      draftOpen: !!draft,
+      draftTitle: draft && draft.id ? 'Edit piece' : 'Add a piece',
+      draftName: draft ? draft.name : '', draftLineV: draft ? draft.line : '',
+      draftCategory: draft ? draft.category : 'Figures', draftScale: draft ? draft.scale : '',
+      draftPrice: draft ? draft.price : 0, draftStatus: draft ? draft.status : 'In stock',
+      draftRelease: draft ? draft.release : '', draftEdition: draft ? draft.edition : '',
+      draftImages: draft ? imgsOf(draft).join('\n') : '', draftDesc: draft ? draft.desc : '',
+      draftStock: draft ? stockOf(draft) : 0,
+      draftFeatured: draft && draft.featured ? 'yes' : 'no',
+      draftError: s.draftError,
+      onDraftName: this.draftField('name'), onDraftLine: this.draftField('line'),
+      onDraftCategory: this.draftField('category'), onDraftScale: this.draftField('scale'),
+      onDraftStatus: this.draftField('status'), onDraftRelease: this.draftField('release'),
+      onDraftEdition: this.draftField('edition'), onDraftDesc: this.draftField('desc'),
+      onDraftImages: (e) => {
+        const list = e.target.value.split('\n').map(x => x.trim()).filter(Boolean);
+        this.setState(st => ({ draft: Object.assign({}, st.draft, { images: list, image: list[0] || '' }) }));
+      },
+      onDraftPrice: (e) => { const v = Number(e.target.value); this.setState(st => ({ draft: Object.assign({}, st.draft, { price: v }) })); },
+      onDraftStock: (e) => { const v = Math.max(0, Number(e.target.value) || 0); this.setState(st => ({ draft: Object.assign({}, st.draft, { stock: v }) })); },
+      onDraftFeatured: (e) => { const v = e.target.value === 'yes'; this.setState(st => ({ draft: Object.assign({}, st.draft, { featured: v }) })); },
+      onDraftCancel: () => this.setState({ draft: null, draftError: false }),
+      onDraftSave: () => {
+        const d = s.draft;
+        if (!d || !d.name.trim()) { this.setState({ draftError: true }); return; }
+        const prev = products.find(p => p.id === d.id);
+        const rec = Object.assign({}, d, { price: Number(d.price) || 0, stock: stockOf(d) });
+        if (rec.stock === 0 && rec.status !== 'Pre-order') rec.status = 'Sold out';
+        rec.featuredAt = rec.featured ? ((prev && prev.featured && prev.featuredAt) || Date.now()) : 0;
+        let list;
+        if (rec.id) { list = products.map(p => (p.id === rec.id ? rec : p)); }
+        else { rec.id = 'p' + Date.now().toString(36); list = products.concat([rec]); }
+        let released = null;
+        let order = featuredOrder(list);
+        while (order.length > MAX_FEATURED) {
+          const oldest = order[0];
+          released = oldest.name;
+          list = list.map(p => (p.id === oldest.id ? Object.assign({}, p, { featured: false, featuredAt: 0 }) : p));
+          order = featuredOrder(list);
+        }
+        this.setProducts(list);
+        this.setState({ draft: null, draftError: false });
+        this.flash(released ? rec.name + ' featured — ' + released + ' released from the hero' : rec.name + ' saved');
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
