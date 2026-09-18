@@ -1,0 +1,23 @@
+// Ported from the ToyHub prototype's SEED / SEED_USERS.
+const SEED_PRODUCTS = [
+  { id: 'p1', name: 'Vigil of the Lantern Keeper', line: 'Kestrel Studio', category: 'Statues', scale: '1/4', price: 24900, status: 'Pre-order', release_window: 'Nov 2026', edition: 'Edition of 300', featured: true, featured_at: 1, images: [], stock: 12, description: 'Resin statue on a cast base, hand-finished lantern glass. Bench notes and materials to be written in.' },
+  { id: 'p2', name: 'Hoplite of the Ninth', line: 'Arcadia Forge', category: 'Figures', scale: '1/6', price: 12900, status: 'In stock', release_window: '', edition: 'Edition of 800', featured: true, featured_at: 2, images: [], stock: 6, description: 'Articulated figure with fabric cloak, two head sculpts and a display stand.' },
+  { id: 'p3', name: 'Kitsune, Winter Shrine', line: 'Nihon Atelier', category: 'Statues', scale: '1/7', price: 18500, status: 'Pre-order', release_window: 'Feb 2027', edition: 'Edition of 500', featured: true, featured_at: 3, images: [], stock: 20, description: 'Cold-cast statue with snow-glazed base and removable torii element.' },
+  { id: 'p4', name: 'Anatomical Study No. 4', line: 'Verrocchio Works', category: 'Busts', scale: '1/3', price: 9800, status: 'In stock', release_window: '', edition: 'Open edition', featured: false, featured_at: 0, images: [], stock: 3, description: 'Plaster-finish bust on a walnut plinth.' },
+  { id: 'p5', name: 'Deep Field Cosmonaut', line: 'Northlight', category: 'Figures', scale: '1/6', price: 14200, status: 'In stock', release_window: '', edition: 'Edition of 600', featured: true, featured_at: 4, images: [], stock: 8, description: 'Weathered suit finish, magnetic tether accessories, lit visor option.' },
+  { id: 'p6', name: "The Cartographer's Desk", line: 'Sable & Crane', category: 'Dioramas', scale: '1/12', price: 21600, status: 'Pre-order', release_window: 'Dec 2026', edition: 'Edition of 200', featured: false, featured_at: 0, images: [], stock: 5, description: 'Furnished diorama with brass instruments and printed chart sheets.' },
+  { id: 'p7', name: 'Ronin, Ash Season', line: 'Arcadia Forge', category: 'Figures', scale: '1/6', price: 13400, status: 'Sold out', release_window: '', edition: 'Edition of 400', featured: false, featured_at: 0, images: [], stock: 0, description: 'Sold through. A second run has not been announced.' },
+  { id: 'p8', name: 'Marble Sentinel', line: 'Kestrel Studio', category: 'Busts', scale: '1/2', price: 11200, status: 'In stock', release_window: '', edition: 'Edition of 250', featured: false, featured_at: 0, images: [], stock: 4, description: 'Stone-effect bust, 34 cm tall, felted underside.' },
+  { id: 'p9', name: 'Orbital Dock Diorama', line: 'Northlight', category: 'Dioramas', scale: '1/24', price: 27400, status: 'Pre-order', release_window: 'Apr 2027', edition: 'Edition of 150', featured: false, featured_at: 0, images: [], stock: 9, description: 'Lit diorama with etched panels and a hinged service arm.' },
+  { id: 'p10', name: 'Tea House in Rain', line: 'Nihon Atelier', category: 'Dioramas', scale: '1/12', price: 16800, status: 'In stock', release_window: '', edition: 'Edition of 350', featured: false, featured_at: 0, images: [], stock: 2, description: 'Rain-effect acrylic canopy, warm interior lighting.' },
+  { id: 'p11', name: 'Display Cloche, Walnut', line: 'Sable & Crane', category: 'Accessories', scale: '—', price: 4200, status: 'In stock', release_window: '', edition: 'Open edition', featured: false, featured_at: 0, images: [], stock: 15, description: 'Glass cloche on a turned walnut base for 1/6 figures.' },
+  { id: 'p12', name: 'Brass Nameplate Set', line: 'Verrocchio Works', category: 'Accessories', scale: '—', price: 1900, status: 'In stock', release_window: '', edition: 'Open edition', featured: false, featured_at: 0, images: [], stock: 40, description: 'Six engravable plates with pins, for shelf labelling.' }
+];
+
+// Plaintext demo password — hashed at seed time, never stored in plaintext.
+const SEED_ADMIN = {
+  email: 'admin@toyhub.co', password: 'admin1234', name: 'Shop Administrator',
+  phone: '02 000 0000', address: 'ToyHub, second floor bench', role: 'admin'
+};
+
+module.exports = { SEED_PRODUCTS, SEED_ADMIN };
