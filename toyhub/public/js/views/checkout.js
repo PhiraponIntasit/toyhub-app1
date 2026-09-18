@@ -1,7 +1,7 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
 import { money } from '../helpers.js';
-import { cartTotals, cartModeOf } from './cart.js';
+import { totalsFor } from './cart.js';
 import { dueOf } from '../helpers.js';
 import { emptyState } from './common.js';
 
@@ -22,35 +22,49 @@ function loadStripeJs() {
 
 // Elements is a Stripe-hosted iframe, so it must persist across our
 // otherwise full-tree re-renders instead of being torn down and recreated.
-const checkoutRuntime = { stripe: null, elements: null, paymentElement: null, clientSecret: null, cartKey: null };
+const checkoutRuntime = { stripe: null, elements: null, paymentElement: null, clientSecret: null, cartKey: null, pendingKey: null, failedKey: null };
 
-function cartKeyOf(store) {
-  return JSON.stringify({ cart: store.state.cart, mode: store.state.mode });
+// Lets a visitor retry a selection whose intent failed by leaving and coming back.
+export function resetCheckoutFailure() {
+  checkoutRuntime.failedKey = null;
+}
+
+// "Buy it now" checks out one piece on its own; otherwise the whole cart.
+export function checkoutSelection(store) {
+  const b = store.state.buyNow;
+  if (b) return { cart: { [b.id]: 1 }, mode: { [b.id]: b.mode }, buyNow: b };
+  return { cart: store.state.cart, mode: store.state.mode, buyNow: null };
 }
 
 export async function mountStripeCheckout(store) {
   const s = store.state;
   if (s.route !== 'checkout' || !store.isMember()) return;
-  const { lines, total } = cartTotals(store);
+  const { cart, mode } = checkoutSelection(store);
+  const { lines } = totalsFor(store, cart, mode);
   if (!lines.length) return;
   if (!s.stripeConfig.stripeConfigured) return;
 
   const container = document.getElementById('payment-element');
   if (!container) return;
 
-  const key = cartKeyOf(store);
+  const key = JSON.stringify({ cart, mode });
   if (checkoutRuntime.paymentElement && checkoutRuntime.cartKey === key) {
-    // Same cart, same intent — just reattach the existing Element to the fresh container.
+    // Same selection, same intent — just reattach the existing Element to the fresh container.
     try { checkoutRuntime.paymentElement.unmount(); } catch (e) { /* not mounted */ }
     checkoutRuntime.paymentElement.mount('#payment-element');
     return;
   }
+  // render() calls this on every pass, so anything that re-renders here would
+  // re-enter it. Track the in-flight and failed selections instead of touching
+  // store state before the first await.
+  if (checkoutRuntime.pendingKey === key || checkoutRuntime.failedKey === key) return;
+  checkoutRuntime.pendingKey = key;
+  checkoutRuntime.paymentElement = null;
+  s.checkoutError = '';
 
   try {
-    checkoutRuntime.paymentElement = null;
-    store.set({ checkoutError: '' });
     const Stripe = await loadStripeJs();
-    const { clientSecret, publishableKey } = await api.createIntent({ cart: s.cart, mode: s.mode });
+    const { clientSecret, publishableKey } = await api.createIntent({ cart, mode });
     checkoutRuntime.stripe = Stripe(publishableKey);
     checkoutRuntime.clientSecret = clientSecret;
     checkoutRuntime.cartKey = key;
@@ -67,7 +81,10 @@ export async function mountStripeCheckout(store) {
     checkoutRuntime.paymentElement = checkoutRuntime.elements.create('payment');
     checkoutRuntime.paymentElement.mount('#payment-element');
   } catch (err) {
+    checkoutRuntime.failedKey = key;
     store.set({ checkoutError: err.message || 'Could not start the payment.' });
+  } finally {
+    checkoutRuntime.pendingKey = null;
   }
 }
 
@@ -83,8 +100,13 @@ async function pay(store) {
     const { order } = await api.finalizeOrder({ paymentIntentId: paymentIntent.id });
     checkoutRuntime.paymentElement = null;
     checkoutRuntime.clientSecret = null;
-    store.setCart({});
-    store.setMode({});
+    checkoutRuntime.cartKey = null;
+    if (s.buyNow) {
+      s.buyNow = null;
+    } else {
+      store.setCart({});
+      store.setMode({});
+    }
     store.state.lastOrder = order;
     store.state.checkoutSubmitting = false;
     await Promise.all([store.refreshProducts(), store.refreshMe()]);
@@ -97,7 +119,8 @@ async function pay(store) {
 
 export function renderCheckout(store) {
   const s = store.state;
-  const { lines, subtotal, shipping, total } = cartTotals(store);
+  const { cart, mode, buyNow } = checkoutSelection(store);
+  const { lines, modeOf, subtotal, shipping, total } = totalsFor(store, cart, mode);
   if (!lines.length) {
     return h('main', { style: 'max-width:1100px;margin:0 auto;padding:40px 24px 90px' }, [
       emptyState('Your cart is empty', 'Add a piece before checking out.', 'Open the catalogue', () => store.go('shop'))
@@ -106,7 +129,9 @@ export function renderCheckout(store) {
   const me = s.user;
 
   return h('main', { style: 'max-width:1100px;margin:0 auto;padding:40px 24px 90px' }, [
-    h('button', { class: 'btn btn-ghost', style: 'margin-bottom:20px', onclick: () => store.go('cart') }, '← Cart'),
+    buyNow
+      ? h('button', { class: 'btn btn-ghost', style: 'margin-bottom:20px', onclick: () => store.go('product', buyNow.id) }, '← Back to the piece')
+      : h('button', { class: 'btn btn-ghost', style: 'margin-bottom:20px', onclick: () => store.go('cart') }, '← Cart'),
     h('div', { 'data-col2': true, style: 'display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:52px;align-items:start' }, [
       h('div', { style: 'display:flex;flex-direction:column;gap:16px' }, [
         h('div', {}, [
@@ -139,9 +164,9 @@ export function renderCheckout(store) {
           h('tbody', {}, lines.map((p) => h('tr', {}, [
             h('td', {}, [
               h('div', { style: 'font-family:var(--font-heading);font-size:15px' }, p.name),
-              h('div', { class: 'tnum', style: 'font-size:11px;opacity:0.55' }, `${s.cart[p.id]} × ${money(p.price)}`)
+              h('div', { class: 'tnum', style: 'font-size:11px;opacity:0.55' }, `${cart[p.id]} × ${money(p.price)}`)
             ]),
-            h('td', { style: 'text-align:right' }, money(dueOf(p, cartModeOf(store, p)) * s.cart[p.id]))
+            h('td', { style: 'text-align:right' }, money(dueOf(p, modeOf(p)) * cart[p.id]))
           ])))
         ]),
         h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;font-size:13px;margin-top:14px' }, [h('span', { style: 'opacity:0.7' }, 'Subtotal'), h('span', {}, money(subtotal))]),

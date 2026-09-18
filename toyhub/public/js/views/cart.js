@@ -2,24 +2,28 @@ import { h } from '../dom.js';
 import { money, dueOf, CARRIAGE, DEPOSIT_PCT, ACCENT, INK } from '../helpers.js';
 import { emptyState } from './common.js';
 
-function cartLines(store) {
-  const s = store.state;
-  const ids = Object.keys(s.cart).filter((id) => s.cart[id] > 0);
-  return ids.map((id) => s.products.find((p) => p.id === id)).filter(Boolean);
-}
-
 export function cartModeOf(store, p) {
   const s = store.state;
   return p.status === 'Pre-order' ? (s.mode[p.id] === 'full' ? 'full' : 'deposit') : 'full';
 }
 
-export function cartTotals(store) {
-  const lines = cartLines(store);
-  const subtotal = lines.reduce((t, p) => t + dueOf(p, cartModeOf(store, p)) * store.state.cart[p.id], 0);
-  const balance = lines.reduce((t, p) => t + (Number(p.price) - dueOf(p, cartModeOf(store, p))) * store.state.cart[p.id], 0);
-  const shipsNow = lines.some((p) => cartModeOf(store, p) === 'full');
+// Priced over an arbitrary {id: qty} selection so "Buy it now" can check out a
+// single piece without the cart taking part.
+export function totalsFor(store, cart, mode) {
+  const lines = Object.keys(cart)
+    .filter((id) => cart[id] > 0)
+    .map((id) => store.state.products.find((p) => p.id === id))
+    .filter(Boolean);
+  const modeOf = (p) => (p.status === 'Pre-order' ? (mode[p.id] === 'full' ? 'full' : 'deposit') : 'full');
+  const subtotal = lines.reduce((t, p) => t + dueOf(p, modeOf(p)) * cart[p.id], 0);
+  const balance = lines.reduce((t, p) => t + (Number(p.price) - dueOf(p, modeOf(p))) * cart[p.id], 0);
+  const shipsNow = lines.some((p) => modeOf(p) === 'full');
   const shipping = shipsNow ? CARRIAGE : 0;
-  return { lines, subtotal, shipping, total: subtotal + shipping, balance, shipsNow };
+  return { lines, modeOf, subtotal, shipping, total: subtotal + shipping, balance, shipsNow };
+}
+
+export function cartTotals(store) {
+  return totalsFor(store, store.state.cart, store.state.mode);
 }
 
 export function renderCart(store) {

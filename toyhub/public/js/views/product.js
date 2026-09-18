@@ -25,7 +25,8 @@ export function renderProduct(store) {
     if (admin) { store.flash('Administrator accounts cannot place orders'); return; }
     if (!s.user) { store.go('login'); store.flash('Sign in to buy this piece'); return; }
     if (soldOutOf(pd)) { store.flash(pd.name + ' is sold out'); return; }
-    if (!s.cart[pd.id]) store.addToCart(pd, pd.status === 'Pre-order' ? 'deposit' : 'full');
+    s.buyNow = { id: pd.id, mode: pd.status === 'Pre-order' ? 'deposit' : 'full' };
+    s.checkoutError = '';
     store.go('checkout');
   };
 

@@ -12,6 +12,7 @@ export const store = {
     products: [],
     cart: loadLocal(KEY_CART, {}),
     mode: loadLocal(KEY_MODE, {}),
+    buyNow: null,
     theme: loadLocal(KEY_THEME, 'light'),
     user: null,
     wishIds: [],

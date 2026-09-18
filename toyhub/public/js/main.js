@@ -6,7 +6,7 @@ import { renderShop } from './views/shop.js';
 import { renderProduct } from './views/product.js';
 import { renderCart } from './views/cart.js';
 import { renderLogin, renderSignup } from './views/auth.js';
-import { renderCheckout, mountStripeCheckout } from './views/checkout.js';
+import { renderCheckout, mountStripeCheckout, resetCheckoutFailure } from './views/checkout.js';
 import { renderDone } from './views/done.js';
 import { renderOrders } from './views/orders.js';
 import { renderWishlist } from './views/wishlist.js';
@@ -83,6 +83,8 @@ async function onHashChange() {
   store.state.route = route;
   store.state.pid = pid;
   store.state.pdImgI = 0;
+  if (route !== 'checkout') store.state.buyNow = null;
+  if (route === 'checkout' && prevRoute !== 'checkout') resetCheckoutFailure();
   render();
   if (route !== prevRoute) window.scrollTo(0, 0);
   if (route === 'admin' && store.isAdmin()) {
