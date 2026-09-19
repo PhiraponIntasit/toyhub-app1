@@ -1,5 +1,4 @@
 const DEPOSIT_PCT = 30;
-const CARRIAGE = 890;
 const MAX_FEATURED = 4;
 
 function stockOf(p) { return p.stock == null ? 0 : Number(p.stock); }
@@ -14,7 +13,9 @@ function serializeProduct(row) {
     price: row.price, status: row.status, release: row.release_window,
     featured: row.featured, featuredAt: Number(row.featured_at) || 0,
     images: row.images || [], stock: row.stock, description: row.description,
-    details: row.details || ''
+    details: row.details || '',
+    boxW: Number(row.box_w_cm) || 0, boxL: Number(row.box_l_cm) || 0,
+    boxH: Number(row.box_h_cm) || 0, weightG: Number(row.weight_g) || 0
   };
 }
 
@@ -32,4 +33,4 @@ function serializeOrder(row, items, emails) {
   };
 }
 
-module.exports = { DEPOSIT_PCT, CARRIAGE, MAX_FEATURED, stockOf, soldOutOf, depositOf, dueOf, serializeProduct, serializeOrder };
+module.exports = { DEPOSIT_PCT, MAX_FEATURED, stockOf, soldOutOf, depositOf, dueOf, serializeProduct, serializeOrder };

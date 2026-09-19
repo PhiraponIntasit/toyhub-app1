@@ -1,5 +1,5 @@
 import { h } from '../dom.js';
-import { money, dueOf, CARRIAGE, DEPOSIT_PCT, ACCENT, INK } from '../helpers.js';
+import { money, dueOf, carriageFor, DEPOSIT_PCT, ACCENT, INK } from '../helpers.js';
 import { emptyState } from './common.js';
 
 export function cartModeOf(store, p) {
@@ -18,7 +18,7 @@ export function totalsFor(store, cart, mode) {
   const subtotal = lines.reduce((t, p) => t + dueOf(p, modeOf(p)) * cart[p.id], 0);
   const balance = lines.reduce((t, p) => t + (Number(p.price) - dueOf(p, modeOf(p))) * cart[p.id], 0);
   const shipsNow = lines.some((p) => modeOf(p) === 'full');
-  const shipping = shipsNow ? CARRIAGE : 0;
+  const shipping = carriageFor(lines.map((p) => ({ product: p, qty: cart[p.id], mode: modeOf(p) })));
   return { lines, modeOf, subtotal, shipping, total: subtotal + shipping, balance, shipsNow };
 }
 

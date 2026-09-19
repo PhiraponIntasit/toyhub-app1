@@ -1,5 +1,29 @@
 export const DEPOSIT_PCT = 30;
-export const CARRIAGE = 890;
+// Mirrors server/lib/shipping.js so the cart can show what checkout will
+// charge. The server recomputes it from the database and has the final say.
+const VOLUMETRIC_DIVISOR = 5000;
+const UNMEASURED_CARRIAGE = 100;
+const ZONE_TH = { base: 120, includedKg: 1, perKg: 35 };
+
+export const isMeasured = (p) => Number(p.boxW) > 0 && Number(p.boxL) > 0 && Number(p.boxH) > 0;
+export const billableKg = (p) => {
+  const volumetric = (Number(p.boxW) * Number(p.boxL) * Number(p.boxH)) / VOLUMETRIC_DIVISOR;
+  return Math.ceil(Math.max(volumetric, Number(p.weightG) / 1000, 0) * 2) / 2;
+};
+export function carriageFor(lines) {
+  const shipping = lines.filter((l) => l.mode === 'full');
+  if (!shipping.length) return 0;
+  let kg = 0;
+  let unmeasured = 0;
+  for (const l of shipping) {
+    if (isMeasured(l.product)) kg += billableKg(l.product) * l.qty;
+    else unmeasured += l.qty;
+  }
+  const measured = kg > 0
+    ? ZONE_TH.base + Math.max(0, Math.ceil((kg - ZONE_TH.includedKg) * 2) / 2) * ZONE_TH.perKg
+    : 0;
+  return Math.round(measured + unmeasured * UNMEASURED_CARRIAGE);
+}
 export const MAX_FEATURED = 4;
 export const CATS = ['Figures', 'Statues', 'Busts', 'Dioramas', 'Accessories'];
 export const STATUSES = ['In stock', 'Pre-order', 'Sold out'];

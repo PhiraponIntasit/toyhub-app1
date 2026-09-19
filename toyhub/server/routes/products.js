@@ -6,6 +6,9 @@ const { serializeProduct, MAX_FEATURED } = require('../lib/helpers');
 
 const router = express.Router();
 const STATUSES = ['In stock', 'Pre-order', 'Sold out'];
+// Measurements are optional; anything absent or nonsensical counts as unmeasured.
+const cm = (v) => Math.max(0, Math.round(Number(v) || 0));
+const grams = (v) => Math.max(0, Math.round(Number(v) || 0));
 const CATEGORIES = ['Figures', 'Statues', 'Busts', 'Dioramas', 'Accessories'];
 
 async function allProducts() {
@@ -57,11 +60,12 @@ router.post('/', requireAdmin, async (req, res) => {
   const images = Array.isArray(b.images) ? b.images.filter(Boolean) : [];
 
   const { rows } = await pool.query(
-    `INSERT INTO products (id, name, line, category, scale, price, status, release_window, featured, featured_at, images, stock, description, details)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
+    `INSERT INTO products (id, name, line, category, scale, price, status, release_window, featured, featured_at, images, stock, description, details, box_w_cm, box_l_cm, box_h_cm, weight_g)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING *`,
     [id, name, String(b.line || '').trim(), category, String(b.scale || '').trim(), price, finalStatus,
       String(b.release || '').trim(), featured, featured ? Date.now() : 0,
-      images, stock, String(b.description || '').trim(), String(b.details || '').trim()]
+      images, stock, String(b.description || '').trim(), String(b.details || '').trim(),
+      cm(b.boxW), cm(b.boxL), cm(b.boxH), grams(b.weightG)]
   );
   const released = await enforceFeaturedCap();
   const { rows: refreshed } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
@@ -89,10 +93,12 @@ router.put('/:id', requireAdmin, async (req, res) => {
 
   await pool.query(
     `UPDATE products SET name=$1, line=$2, category=$3, scale=$4, price=$5, status=$6, release_window=$7,
-       featured=$8, featured_at=$9, images=$10, stock=$11, description=$12, details=$13 WHERE id=$14`,
+       featured=$8, featured_at=$9, images=$10, stock=$11, description=$12, details=$13,
+       box_w_cm=$14, box_l_cm=$15, box_h_cm=$16, weight_g=$17 WHERE id=$18`,
     [name, String(b.line || '').trim(), category, String(b.scale || '').trim(), price, finalStatus,
       String(b.release || '').trim(), featured, featuredAt,
-      images, stock, String(b.description || '').trim(), String(b.details || '').trim(), req.params.id]
+      images, stock, String(b.description || '').trim(), String(b.details || '').trim(),
+      cm(b.boxW), cm(b.boxL), cm(b.boxH), grams(b.weightG), req.params.id]
   );
   const released = await enforceFeaturedCap();
   const { rows: refreshed } = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);

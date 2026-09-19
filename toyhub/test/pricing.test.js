@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { DEPOSIT_PCT, CARRIAGE, stockOf, soldOutOf, depositOf, dueOf } = require('../server/lib/helpers');
+const { DEPOSIT_PCT, stockOf, soldOutOf, depositOf, dueOf } = require('../server/lib/helpers');
 
 const preorder = { price: 24900, status: 'Pre-order', stock: 12 };
 const inStock = { price: 12900, status: 'In stock', stock: 6 };
@@ -31,8 +31,4 @@ test('a piece is sold out when marked so or when nothing is left', () => {
   assert.equal(soldOutOf({ status: 'In stock', stock: 0 }), true);
   assert.equal(soldOutOf({ status: 'Sold out', stock: 5 }), true);
   assert.equal(soldOutOf(inStock), false);
-});
-
-test('carriage is a flat fee', () => {
-  assert.equal(CARRIAGE, 890);
 });

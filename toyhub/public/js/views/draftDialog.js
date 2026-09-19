@@ -1,9 +1,22 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
-import { CATS, STATUSES, brandsOf } from '../helpers.js';
+import { CATS, STATUSES, brandsOf, isMeasured, billableKg } from '../helpers.js';
 import { textField, textareaField } from './forms.js';
 
 const NEW_BRAND = '__new__';
+
+// Shows the administrator what the box they just typed will actually be billed
+// as, so an over-sized carton is obvious before the piece goes on sale.
+function shippingNote(d) {
+  if (!isMeasured(d)) {
+    return h('div', { style: 'font-size:12px;opacity:0.7;margin-top:8px' }, 'Not measured — ships at ฿100 a unit.');
+  }
+  const volumetric = (d.boxW * d.boxL * d.boxH) / 5000;
+  const actual = (d.weightG || 0) / 1000;
+  const billed = billableKg(d);
+  return h('div', { class: 'tnum', style: 'font-size:12px;opacity:0.7;margin-top:8px' },
+    `Billed as ${billed} kg — volume ${volumetric.toFixed(1)} kg against ${actual.toFixed(1)} kg actual.`);
+}
 
 // A brand is picked from the ones the shop already carries, or typed once and
 // then carried by the piece — which is how a new brand comes into existence.
@@ -45,7 +58,8 @@ export function renderDraftDialog(store) {
       name: d.name, line: d.line, category: d.category, scale: d.scale,
       price: Number(d.price) || 0, status: d.status, release: d.release,
       featured: !!d.featured, images: d.images || [], stock: Math.max(0, Number(d.stock) || 0),
-      description: d.description, details: d.details || ''
+      description: d.description, details: d.details || '',
+      boxW: d.boxW || 0, boxL: d.boxL || 0, boxH: d.boxH || 0, weightG: d.weightG || 0
     };
     try {
       const { product, released } = d.id ? await api.updateProduct(d.id, body) : await api.createProduct(body);
@@ -84,6 +98,17 @@ export function renderDraftDialog(store) {
           ])
         ]),
         textField({ key: 'draft.stock', label: 'Units in stock', type: 'number', value: d.stock, set: (v) => set('stock')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
+        h('div', { style: 'grid-column:1 / -1' }, [
+          h('label', { style: 'display:block;font-size:12px;margin-bottom:6px' },
+            'Packed box — carriage is billed on whichever is greater, the weight or the volume. Leave blank and the piece ships at a flat ฿100.'),
+          h('div', { style: 'display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px' }, [
+            textField({ key: 'draft.boxW', label: 'Width (cm)', type: 'number', value: d.boxW || 0, set: (v) => set('boxW')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
+            textField({ key: 'draft.boxL', label: 'Length (cm)', type: 'number', value: d.boxL || 0, set: (v) => set('boxL')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
+            textField({ key: 'draft.boxH', label: 'Height (cm)', type: 'number', value: d.boxH || 0, set: (v) => set('boxH')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
+            textField({ key: 'draft.weightKg', label: 'Weight (kg)', type: 'number', value: (d.weightG || 0) / 1000, set: (v) => set('weightG')(Math.max(0, Math.round((Number(v) || 0) * 1000))), attrs: { min: 0, step: 0.1 } })
+          ]),
+          shippingNote(d)
+        ]),
         h('div', { style: 'grid-column:1 / -1' }, [
           textareaField({
             key: 'draft.images', label: 'Photographs — one image address per line, first is the cover. Ctrl+Enter tidies the list and opens the next line',

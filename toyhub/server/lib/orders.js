@@ -1,7 +1,8 @@
 // Order reading and writing, kept out of the route layer so it can be tested
 // without going through Stripe or HTTP.
 const { pool } = require('../db');
-const { CARRIAGE, stockOf, soldOutOf, dueOf, serializeOrder } = require('./helpers');
+const { stockOf, soldOutOf, dueOf, serializeOrder } = require('./helpers');
+const { carriageFor } = require('./shipping');
 
 // Three queries whatever the order count — the admin and account lists would
 // otherwise issue three per order.
@@ -43,11 +44,10 @@ async function resolveLines(cartEntries) {
   return { lines };
 }
 
-function totalsOf(lines) {
+function totalsOf(lines, zone) {
   const subtotal = lines.reduce((t, l) => t + dueOf(l.product, l.mode) * l.qty, 0);
   const balance = lines.reduce((t, l) => t + (Number(l.product.price) - dueOf(l.product, l.mode)) * l.qty, 0);
-  const shipsNow = lines.some((l) => l.mode === 'full');
-  const shipping = shipsNow ? CARRIAGE : 0;
+  const shipping = carriageFor(lines, zone);
   return { subtotal, shipping, total: subtotal + shipping, balance };
 }
 

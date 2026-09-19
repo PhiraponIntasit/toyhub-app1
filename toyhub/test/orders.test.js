@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { start, stop, pool } = require('./helper');
 const { resolveLines, totalsOf, writeOrder, loadOrder, loadOrders } = require('../server/lib/orders');
-const { CARRIAGE } = require('../server/lib/helpers');
+const { carriageFor } = require('../server/lib/shipping');
 
 // Stripe is not involved below: these exercise the part that runs once a
 // payment has already succeeded, which is where the money is at stake.
@@ -45,7 +45,8 @@ test('a cart cannot ask for more than the shelf holds', async () => {
 
 test('carriage is charged only when something ships now', async () => {
   const { lines: shipping } = await resolveLines([{ id: 'p2', qty: 1, mode: 'full' }]);
-  assert.equal(totalsOf(shipping).shipping, CARRIAGE);
+  assert.equal(totalsOf(shipping).shipping, carriageFor(shipping), 'billed on the packed box');
+  assert.ok(totalsOf(shipping).shipping > 0);
 
   const { lines: deposit } = await resolveLines([{ id: 'p1', qty: 1, mode: 'deposit' }]);
   const t = totalsOf(deposit);
@@ -65,7 +66,7 @@ test('writing an order records its lines and takes the stock with it', async () 
   const order = await loadOrder(ref);
   assert.equal(order.items.length, 1);
   assert.equal(order.items[0].qty, 2);
-  assert.equal(order.total, 12900 * 2 + CARRIAGE);
+  assert.equal(order.total, 12900 * 2 + carriageFor(lines));
   assert.equal(order.cardLast4, '4242');
   assert.equal(order.status, 'Confirmed');
 

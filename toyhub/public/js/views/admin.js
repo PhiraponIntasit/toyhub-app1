@@ -178,7 +178,7 @@ export function renderAdmin(store) {
       h('div', { style: 'display:flex;gap:10px' }, [
         h('button', {
           class: 'btn btn-primary',
-          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: BRANDS[0], category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', featured: false, images: [], stock: 5, description: '', details: '' } })
+          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: BRANDS[0], category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', featured: false, images: [], stock: 5, description: '', details: '', boxW: 0, boxL: 0, boxH: 0, weightG: 0 } })
         }, 'Add a piece')
       ])
     ]),
