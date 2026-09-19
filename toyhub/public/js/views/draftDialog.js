@@ -8,8 +8,12 @@ export function renderDraftDialog(store) {
   const d = s.draft;
   if (!d) return null;
   const set = (k) => (v) => { s.draft = Object.assign({}, s.draft, { [k]: v }); };
+  const setImages = (text) => set('images')(text.split('\n').map((x) => x.trim()).filter(Boolean));
 
+  // Typing no longer re-renders, so `d` above is the draft as it looked when the
+  // dialog was last drawn — read the live one here instead.
   const save = async () => {
+    const d = store.state.draft;
     if (!d.name.trim()) { store.set({ draftError: true }); return; }
     const body = {
       name: d.name, line: d.line, category: d.category, scale: d.scale,
@@ -32,38 +36,51 @@ export function renderDraftDialog(store) {
     h('div', { class: 'dialog', 'data-enter': true, style: 'width:min(660px,100%)' }, [
       h('div', { class: 'dialog-title' }, d.id ? 'Edit piece' : 'Add a piece'),
       h('div', { 'data-formgrid': true, style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px' }, [
-        h('div', { style: 'grid-column:1 / -1' }, [textField(store, { key: 'draft.name', label: 'Piece name', placeholder: 'Vigil of the Lantern Keeper', value: d.name, set: set('name') })]),
-        textField(store, { key: 'draft.line', label: 'Atelier', placeholder: 'Kestrel Studio', value: d.line, set: set('line') }),
+        h('div', { style: 'grid-column:1 / -1' }, [textField({ key: 'draft.name', label: 'Piece name', placeholder: 'Vigil of the Lantern Keeper', value: d.name, set: set('name') })]),
+        textField({ key: 'draft.line', label: 'Atelier', placeholder: 'Kestrel Studio', value: d.line, set: set('line') }),
         h('div', { class: 'field' }, [
           h('label', {}, 'Category'),
           h('select', { class: 'input', value: d.category, onChange: (e) => { set('category')(e.target.value); store.set({}); } },
             CATS.map((c) => h('option', { value: c }, c)))
         ]),
-        textField(store, { key: 'draft.scale', label: 'Scale', placeholder: '1/6', value: d.scale, set: set('scale') }),
-        textField(store, { key: 'draft.price', label: 'Price (THB)', type: 'number', value: d.price, set: (v) => set('price')(Number(v) || 0), attrs: { min: 0, step: 100 } }),
+        textField({ key: 'draft.scale', label: 'Scale', placeholder: '1/6', value: d.scale, set: set('scale') }),
+        textField({ key: 'draft.price', label: 'Price (THB)', type: 'number', value: d.price, set: (v) => set('price')(Number(v) || 0), attrs: { min: 0, step: 100 } }),
         h('div', { class: 'field' }, [
           h('label', {}, 'Availability'),
           h('select', { class: 'input', value: d.status, onChange: (e) => { set('status')(e.target.value); store.set({}); } },
             STATUSES.map((st) => h('option', { value: st }, st)))
         ]),
-        textField(store, { key: 'draft.release', label: 'Shipping window', placeholder: 'Q1 2027', value: d.release, set: set('release') }),
-        textField(store, { key: 'draft.edition', label: 'Edition', placeholder: 'Edition of 500', value: d.edition, set: set('edition') }),
+        textField({ key: 'draft.release', label: 'Shipping window', placeholder: 'Q1 2027', value: d.release, set: set('release') }),
+        textField({ key: 'draft.edition', label: 'Edition', placeholder: 'Edition of 500', value: d.edition, set: set('edition') }),
         h('div', { class: 'field' }, [
           h('label', {}, 'Featured in the homepage hero (max 4)'),
           h('select', { class: 'input', value: d.featured ? 'yes' : 'no', onChange: (e) => { set('featured')(e.target.value === 'yes'); store.set({}); } }, [
             h('option', { value: 'no' }, 'No'), h('option', { value: 'yes' }, 'Yes')
           ])
         ]),
-        textField(store, { key: 'draft.stock', label: 'Units in stock', type: 'number', value: d.stock, set: (v) => set('stock')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
+        textField({ key: 'draft.stock', label: 'Units in stock', type: 'number', value: d.stock, set: (v) => set('stock')(Math.max(0, Number(v) || 0)), attrs: { min: 0, step: 1 } }),
         h('div', { style: 'grid-column:1 / -1' }, [
-          textareaField(store, {
-            key: 'draft.images', label: 'Photographs — one image address per line, first is the cover',
+          textareaField({
+            key: 'draft.images', label: 'Photographs — one image address per line, first is the cover. Ctrl+Enter tidies the list and opens the next line',
             placeholder: 'https://…/front.jpg', value: (d.images || []).join('\n'),
-            set: (v) => set('images')(v.split('\n').map((x) => x.trim()).filter(Boolean))
+            set: setImages,
+            onKeydown: (e) => {
+              if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey)) return;
+              e.preventDefault();
+              const ta = e.target;
+              const kept = [];
+              for (const line of ta.value.split('\n').map((x) => x.trim())) {
+                if (line && kept.indexOf(line) === -1) kept.push(line);
+              }
+              ta.value = kept.length ? kept.join('\n') + '\n' : '';
+              ta.selectionStart = ta.selectionEnd = ta.value.length;
+              ta.scrollTop = ta.scrollHeight;
+              setImages(ta.value);
+            }
           })
         ]),
         h('div', { style: 'grid-column:1 / -1' }, [
-          textareaField(store, { key: 'draft.description', label: 'Description', placeholder: 'Bench notes, materials, what ships in the box.', value: d.description, set: set('description') })
+          textareaField({ key: 'draft.description', label: 'Description', placeholder: 'Bench notes, materials, what ships in the box.', value: d.description, set: set('description') })
         ])
       ]),
       s.draftError ? h('div', { style: 'font-size:12px;color:var(--color-accent-700)' }, 'A piece needs a name before it can be saved.') : null,

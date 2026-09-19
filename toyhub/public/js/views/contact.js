@@ -37,8 +37,8 @@ export function renderContact(store) {
         h('p', { style: 'font-size:12px;opacity:0.6;margin-top:16px' }, 'For a specific order, quote its reference (TH-XXXXXX) — it is on both emails.')
       ]),
       h('form', { 'data-formgrid': true, style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:26px', onSubmit: submit }, [
-        textField(store, { key: 'contact.name', label: 'Your name', placeholder: 'Somchai Phanit', value: s.contactForm.name, set: set('name') }),
-        textField(store, { key: 'contact.email', label: 'Email', type: 'email', placeholder: 'you@example.com', value: s.contactForm.email, set: set('email') }),
+        textField({ key: 'contact.name', label: 'Your name', placeholder: 'Somchai Phanit', value: s.contactForm.name, set: set('name') }),
+        textField({ key: 'contact.email', label: 'Email', type: 'email', placeholder: 'you@example.com', value: s.contactForm.email, set: set('email') }),
         h('div', { class: 'field', style: 'grid-column:1 / -1' }, [
           h('label', {}, 'Subject'),
           h('select', { class: 'input', value: s.contactForm.subject, onChange: (e) => { s.contactForm = Object.assign({}, s.contactForm, { subject: e.target.value }); store.set({}); } }, [
@@ -48,8 +48,8 @@ export function renderContact(store) {
             h('option', { value: 'Something else' }, 'Something else')
           ])
         ]),
-        h('div', { style: 'grid-column:1 / -1' }, [textField(store, { key: 'contact.ref', label: 'Order reference (if any)', placeholder: 'TH-XXXXXX', value: s.contactForm.ref, set: set('ref') })]),
-        h('div', { style: 'grid-column:1 / -1' }, [textareaField(store, { key: 'contact.body', label: 'Message', placeholder: 'What happened, and what would put it right.', value: s.contactForm.body, set: set('body'), style: 'min-height:130px' })]),
+        h('div', { style: 'grid-column:1 / -1' }, [textField({ key: 'contact.ref', label: 'Order reference (if any)', placeholder: 'TH-XXXXXX', value: s.contactForm.ref, set: set('ref') })]),
+        h('div', { style: 'grid-column:1 / -1' }, [textareaField({ key: 'contact.body', label: 'Message', placeholder: 'What happened, and what would put it right.', value: s.contactForm.body, set: set('body'), style: 'min-height:130px' })]),
         s.contactError ? h('div', { style: 'grid-column:1 / -1;font-size:12px;color:var(--color-accent-700)' }, s.contactError) : null,
         s.contactSent ? h('div', { style: 'grid-column:1 / -1;font-size:13px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:14px' }, `Thank you — the shop has your message and replies to ${s.contactSent}.`) : null,
         h('div', { style: 'grid-column:1 / -1;display:flex;justify-content:flex-end;gap:10px' }, [
