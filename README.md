@@ -118,23 +118,21 @@ createdb toyhub_test
 TEST_DATABASE_URL=postgres://…/toyhub_test npm test
 ```
 
-23 tests over pricing arithmetic, authentication and permissions, and the order write
-path — including that a failed write rolls back without consuming stock, and that
+38 tests over pricing and carriage arithmetic, authentication and permissions, the
+order write path and the pre-order balance — including that a failed write rolls back
+without consuming stock, that nothing ships while money is outstanding, and that
 loading orders costs three queries no matter how many there are. The suite refuses to
 run unless `TEST_DATABASE_URL` is set, because it truncates every table. CI runs it on
 every push against a PostgreSQL service container.
 
 ## Deploying to Vercel + Supabase
 
-1. Create a Supabase project and copy the **connection pooler** URI (port 6543) — a
-   serverless function opens a connection per invocation.
-2. Point a local shell at it and create the schema:
-   `DATABASE_URL='<supabase-uri>' npm run migrate && DATABASE_URL='<supabase-uri>' npm run seed`
-3. Import the repository on Vercel and set **Root Directory** to `toyhub`.
-4. Add environment variables: `DATABASE_URL`, `SESSION_SECRET`, and the two
-   `STRIPE_*` keys if payments should work.
-5. Deploy. `vercel.json` sends `/api/*` to the Express app and serves `public/` as
-   static files; `/api/health` reports whether the database is reachable.
+Step by step in [`toyhub/DEPLOY.md`](toyhub/DEPLOY.md). In short: create the schema on
+a Supabase database from your own machine, import the repository on Vercel with
+**Root Directory** set to `toyhub`, and give it `DATABASE_URL` (the pooler string on
+port 6543), `SESSION_SECRET` and the two `STRIPE_*` keys. `vercel.json` sends `/api/*`
+to the Express app and serves `public/` as static files; `/api/health` reports whether
+the database is reachable.
 
 ## Known limitations
 
@@ -147,8 +145,10 @@ Deliberate, given this is a portfolio build rather than a live shop:
 - **No Stripe webhook.** The order is written when the browser reports a successful
   payment. Taking real money would mean moving that to a `payment_intent.succeeded`
   webhook, so a closed tab cannot lose an order.
-- **No rate limiting or security headers**, and the seeded administrator password is
-  public in this file — all fine for a demo, none of it fine for a real shop.
+- **No rate limiting or security headers.** The administrator password above is the
+  seed default, published here on purpose so the demo can be looked around; a
+  deployment sets `ADMIN_EMAIL` and `ADMIN_PASSWORD` instead. Fine for a demo, none of
+  it fine for a real shop.
 
 The design came from a prototype built in Claude Design; the original brief and
 conversation are in [`project/`](project/) and [`chats/`](chats/).

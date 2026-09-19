@@ -8,6 +8,7 @@
     "dev": "node --watch server/index.js",
     "migrate": "node server/migrate.js",
     "seed": "node server/seed.js",
+    "setup": "node server/migrate.js && node server/seed.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
   },
   "keywords": [],

@@ -15,8 +15,12 @@ const SEED_PRODUCTS = [
 ];
 
 // Plaintext demo password — hashed at seed time, never stored in plaintext.
+// A public deployment should set ADMIN_EMAIL and ADMIN_PASSWORD, or anyone who
+// has read the repository can sign in and empty the shop.
 const SEED_ADMIN = {
-  email: 'admin@toyhub.co', password: 'admin1234', name: 'Shop Administrator',
+  email: process.env.ADMIN_EMAIL || 'admin@toyhub.co',
+  password: process.env.ADMIN_PASSWORD || 'admin1234',
+  name: 'Shop Administrator',
   phone: '02 000 0000', address: 'ToyHub, second floor bench', role: 'admin'
 };
 
