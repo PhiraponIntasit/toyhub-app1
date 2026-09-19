@@ -1,6 +1,26 @@
 import { h } from '../dom.js';
-import { imgsOf, featuredOrder, pickRandom, money, MAX_FEATURED } from '../helpers.js';
+import { imgsOf, featuredOrder, pickRandom, money, bgUrl, MAX_FEATURED } from '../helpers.js';
 import { plateBg, plateCard, infoCard } from './common.js';
+
+// The hero plate opens the piece it is showing, so the image is as clickable as
+// the "View the plate" button beside it.
+function heroPlate(store, hero, heroImgs) {
+  const frame = h('div', { 'data-enter-slow': true, style: 'position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [
+    hero && heroImgs.length
+      ? h('div', { 'data-kenburns': true, role: 'img', 'aria-label': hero.name, style: `position:absolute;inset:0;background-image:${bgUrl(heroImgs[0])};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)` })
+      : h('div', { style: 'position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px' }, [
+        h('div', {}, [
+          h('div', { style: 'font-family:var(--font-heading);font-size:20px;margin-bottom:6px' }, 'Plate pending'),
+          h('div', { style: 'font-size:12px;opacity:0.6;max-width:26ch;margin:0 auto' }, 'Add a photograph for this piece from the Admin screen.')
+        ])
+      ])
+  ]);
+  if (!hero) return frame;
+  return h('button', {
+    class: 'lnk', style: 'display:block;width:100%;cursor:pointer',
+    'aria-label': `View ${hero.name}`, onclick: () => store.go('product', hero.id)
+  }, [frame]);
+}
 
 export function renderHome(store) {
   const s = store.state;
@@ -30,26 +50,17 @@ export function renderHome(store) {
             h('button', { class: 'btn btn-secondary', onclick: () => store.go('shop') }, 'Browse catalogue')
           ]),
           h('div', { style: 'display:flex;align-items:center;gap:14px;margin-top:34px' }, [
-            h('button', { class: 'btn btn-icon btn-secondary', 'aria-label': 'Previous', onclick: () => store.set({ heroI: s.heroI + heroPool.length - 1 }) }, '←'),
-            h('button', { class: 'btn btn-icon btn-secondary', 'aria-label': 'Next', onclick: () => store.set({ heroI: s.heroI + 1 }) }, '→'),
+            h('button', { class: 'btn btn-icon btn-secondary', 'aria-label': 'Previous', onclick: () => store.showHero(s.heroI + heroPool.length - 1) }, '←'),
+            h('button', { class: 'btn btn-icon btn-secondary', 'aria-label': 'Next', onclick: () => store.showHero(s.heroI + 1) }, '→'),
             h('div', { style: 'display:flex;gap:8px;margin-left:6px' },
               heroPool.map((p, i) => h('button', {
                 class: 'lnk', 'aria-label': 'Slide',
                 style: `width:26px;height:2px;background:${i === s.heroI % heroPool.length ? 'var(--color-accent)' : 'var(--color-divider)'}`,
-                onclick: () => store.set({ heroI: i })
+                onclick: () => store.showHero(i)
               })))
           ])
         ]),
-        h('div', { 'data-enter-slow': true, style: 'position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [
-          hero && heroImgs.length
-            ? h('div', { 'data-kenburns': true, role: 'img', 'aria-label': hero.name, style: `position:absolute;inset:0;background-image:url("${heroImgs[0]}");background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)` })
-            : h('div', { style: 'position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px' }, [
-              h('div', {}, [
-                h('div', { style: 'font-family:var(--font-heading);font-size:20px;margin-bottom:6px' }, 'Plate pending'),
-                h('div', { style: 'font-size:12px;opacity:0.6;max-width:26ch;margin:0 auto' }, 'Add a photograph for this piece from the Admin screen.')
-              ])
-            ])
-        ])
+        heroPlate(store, hero, heroImgs)
       ])
     ]),
 

@@ -56,6 +56,11 @@ export function infoCard(store, p, opts) {
     h('span', { class: 'card-kicker' }, p.line),
     h('button', { class: 'lnk card-title', style: 'text-align:left', onclick: () => store.go('product', p.id) }, p.name)
   ];
+  if (opts.image) {
+    kids.unshift(h('button', { class: 'lnk', style: 'display:block', 'aria-label': p.name, onclick: () => store.go('product', p.id) }, [
+      h('div', { 'data-plate': true, style: 'position:relative;aspect-ratio:3/4;background:var(--color-surface);border:6px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [plateBg(p)])
+    ]));
+  }
   if (opts.body) kids.push(h('p', { class: 'card-body' }, opts.body === 'stock' ? d.stockNote : d.short));
   kids.push(h('div', { class: 'card-meta tnum', style: 'justify-content:space-between;border-top:1px solid var(--color-divider);padding-top:10px' }, [
     h('span', {}, d.priceLabel),

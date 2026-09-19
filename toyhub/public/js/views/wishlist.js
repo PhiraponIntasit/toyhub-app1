@@ -9,7 +9,7 @@ export function renderWishlist(store) {
     h('p', { style: 'font-size:13px;opacity:0.6;margin:0 0 26px' }, 'Sold-out pieces you save count as demand — the shop is told, and you are notified first if a second run is announced.'),
     items.length
       ? h('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px' },
-        items.map((p) => infoCard(store, p, { body: 'stock', metaRight: 'status', actions: true })))
+        items.map((p) => infoCard(store, p, { image: true, body: 'stock', metaRight: 'status', actions: true })))
       : emptyState('Nothing saved yet', 'Use “Save this piece” on any plate — including sold-out ones.', 'Open the catalogue', () => store.go('shop'))
   ]);
 }

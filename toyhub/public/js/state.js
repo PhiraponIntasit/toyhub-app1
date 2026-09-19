@@ -4,6 +4,7 @@ import { loadLocal, saveLocal, soldOutOf, stockOf } from './helpers.js';
 const KEY_CART = 'toyhub.cart.v1';
 const KEY_MODE = 'toyhub.paymode.v1';
 const KEY_THEME = 'toyhub.theme.v1';
+const HERO_MS = 7000;
 
 export const store = {
   state: {
@@ -64,6 +65,20 @@ export const store = {
     }, 60);
     if (this.state.route !== 'home') { location.hash = '#/home'; setTimeout(after, 60); }
     else after();
+  },
+
+  startHeroRotation() {
+    clearInterval(this._heroTimer);
+    this._heroTimer = setInterval(() => {
+      if (this.state.route === 'home') this.set({ heroI: this.state.heroI + 1 });
+    }, HERO_MS);
+  },
+
+  // Stepping through the hero by hand restarts the countdown, so the slide
+  // someone just chose is not swept away a moment later.
+  showHero(i) {
+    this.set({ heroI: i });
+    this.startHeroRotation();
   },
 
   isMember() { return !!this.state.user && this.state.user.role !== 'admin'; },
