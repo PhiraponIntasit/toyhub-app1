@@ -30,12 +30,14 @@ expiry, any CVC. No real money moves.
 **For a customer** — filter the catalogue by category, availability and price; save
 pieces to a wishlist; add to a cart or buy a single piece outright. A pre-order can be
 taken on a 30% deposit with the balance due when it ships, or settled in full. Card
-details are collected by Stripe Elements and never reach this server. Past orders,
-their state and the emails sent about them are all on one page.
+details are collected by Stripe Elements and never reach this server. When a reserved
+piece arrives the customer is emailed what is left to pay and settles it from the same
+orders page. Past orders, their state and the emails sent about them are all on one page.
 
 **For the shop** — add, edit and delete pieces, choose the four that lead the homepage,
 and watch stock fall automatically as orders come in. The order desk moves an order
-through its states and sends a tracking number. The inbox holds customer enquiries, and
+through its states, asks for an outstanding balance and sends a tracking number. The
+inbox holds customer enquiries, and
 a demand tab counts how many people have saved each piece — including ones that are
 sold out.
 
@@ -55,6 +57,14 @@ which piece and how many; every amount charged is derived server-side in
 consume commit together or not at all, and stock is decremented in SQL
 (`stock - $1`) rather than from a value read earlier, so two checkouts racing cannot
 overwrite each other's figure.
+
+**Carriage is billed on the box, and not until the box exists.** A parcel is charged on
+whichever is greater, its actual weight or its volumetric weight
+(`L × W × H ÷ 5000`), so a light but bulky figure pays for the space it takes
+([`shipping.js`](toyhub/server/lib/shipping.js)). A deposit on a piece a year out is
+therefore not charged carriage at all: the figure is worked out when the piece lands
+and the shop asks for the balance, then frozen on the order so what the customer was
+shown is what they pay. Nothing ships while any of it is outstanding.
 
 **No `innerHTML` anywhere.** The DOM is built through a small
 [`h()` helper](toyhub/public/js/dom.js) that only ever sets text nodes and attributes,

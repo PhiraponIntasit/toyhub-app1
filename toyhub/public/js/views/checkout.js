@@ -6,7 +6,7 @@ import { dueOf } from '../helpers.js';
 import { emptyState } from './common.js';
 
 let stripeJsPromise = null;
-function loadStripeJs() {
+export function loadStripeJs() {
   if (window.Stripe) return Promise.resolve(window.Stripe);
   if (!stripeJsPromise) {
     stripeJsPromise = new Promise((resolve, reject) => {
@@ -18,6 +18,18 @@ function loadStripeJs() {
     });
   }
   return stripeJsPromise;
+}
+
+// Shared with the balance screen so both card forms sit in the same typeface
+// and follow the light/dark switch together.
+export function elementsAppearance(theme) {
+  return {
+    theme: theme === 'dark' ? 'night' : 'stripe',
+    variables: {
+      colorPrimary: '#b68235', colorText: theme === 'dark' ? '#efebe5' : '#201f1d',
+      colorBackground: 'transparent', fontFamily: 'Lora, system-ui, sans-serif', borderRadius: '4px'
+    }
+  };
 }
 
 // Elements is a Stripe-hosted iframe, so it must persist across our
@@ -71,14 +83,7 @@ export async function mountStripeCheckout(store) {
     checkoutRuntime.clientSecret = clientSecret;
     checkoutRuntime.cartKey = key;
     checkoutRuntime.elements = checkoutRuntime.stripe.elements({
-      clientSecret,
-      appearance: {
-        theme: s.theme === 'dark' ? 'night' : 'stripe',
-        variables: {
-          colorPrimary: '#b68235', colorText: s.theme === 'dark' ? '#efebe5' : '#201f1d',
-          colorBackground: 'transparent', fontFamily: 'Lora, system-ui, sans-serif', borderRadius: '4px'
-        }
-      }
+      clientSecret, appearance: elementsAppearance(s.theme)
     });
     checkoutRuntime.paymentElement = checkoutRuntime.elements.create('payment');
     checkoutRuntime.paymentElement.mount('#payment-element');

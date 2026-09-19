@@ -2,10 +2,15 @@ import { h } from '../dom.js';
 import { money, dateLabel, DEPOSIT_PCT } from '../helpers.js';
 import { emptyState } from './common.js';
 
-function orderCard(o) {
+function orderCard(store, o) {
   const emails = [
     { mark: '✓', color: 'var(--color-accent-700)', title: 'Order confirmed by email', detail: `${dateLabel(o.confirmedAt || o.createdAt)} — sent to ${o.email}` }
   ];
+  if (o.balanceRequestedAt) {
+    emails.push(o.balancePaidAt
+      ? { mark: '✓', color: 'var(--color-accent-700)', title: 'Balance settled', detail: dateLabel(o.balancePaidAt) }
+      : { mark: '!', color: 'var(--color-accent-700)', title: 'Balance requested — the piece has arrived', detail: `${dateLabel(o.balanceRequestedAt)} — sent to ${o.email}` });
+  }
   emails.push(o.tracking
     ? { mark: '✓', color: 'var(--color-accent-700)', title: 'Shipped — tracking emailed', detail: `Tracking ${o.tracking}` + (o.shippedAt ? ` — ${dateLabel(o.shippedAt)}` : '') }
     : { mark: '○', color: 'var(--color-text)', title: 'Tracking email pending', detail: o.status === 'Cancelled' ? 'Order cancelled' : 'Sent the day the piece leaves the bench' });
@@ -29,7 +34,16 @@ function orderCard(o) {
       h('span', { style: 'opacity:0.7' }, 'Paid'),
       h('span', { class: 'price', style: 'font-size:20px' }, money(o.total))
     ]),
-    o.balance > 0 ? h('div', { class: 'tnum', style: 'font-size:12px;opacity:0.65;margin-top:6px' }, `Balance due when the window opens — ${money(o.balance)} (plus carriage)`) : null,
+    o.balanceDue > 0
+      ? h('div', { style: 'border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap' }, [
+        h('div', {}, [
+          h('div', { style: 'font-size:13px' }, 'Your piece has arrived — balance due'),
+          h('div', { class: 'tnum', style: 'font-size:11px;opacity:0.7;margin-top:2px' },
+            `${money(o.balanceDue - o.balanceShipping)} on the piece` + (o.balanceShipping ? ` + ${money(o.balanceShipping)} insured carriage` : ''))
+        ]),
+        h('button', { class: 'btn btn-primary', onclick: () => store.go('balance', o.ref) }, `Pay ${money(o.balanceDue)}`)
+      ])
+      : o.balance > 0 ? h('div', { class: 'tnum', style: 'font-size:12px;opacity:0.65;margin-top:6px' }, `Balance due when the window opens — ${money(o.balance)} (plus carriage)`) : null,
     h('div', { style: 'border-top:1px solid var(--color-divider);margin-top:14px;padding-top:12px;display:flex;flex-direction:column;gap:8px' },
       emails.map((m) => h('div', { style: 'display:flex;gap:10px;align-items:baseline' }, [
         h('span', { style: `color:${m.color};font-size:13px` }, m.mark),
@@ -47,7 +61,7 @@ export function renderOrders(store) {
       h('button', { class: 'btn btn-secondary', onclick: () => store.go('contact') }, 'A problem with an order? Contact us')
     ]),
     s.myOrders.length
-      ? h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, s.myOrders.map(orderCard))
+      ? h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, s.myOrders.map((o) => orderCard(store, o)))
       : emptyState('No orders yet', 'Anything you buy is listed here with its state.', 'Open the catalogue', () => store.go('shop'))
   ]);
 }

@@ -31,6 +31,7 @@ export const store = {
     contactForm: { name: '', email: '', subject: 'An order or tracking', ref: '', body: '' }, contactError: '', contactSent: '',
     cardForm: { name: '', number: '', exp: '', cvc: '' },
     checkoutError: '', checkoutSubmitting: false,
+    balanceError: '', balanceSubmitting: false,
     stripeConfig: { stripeConfigured: false, stripePublishableKey: '' },
     lastOrder: null,
     trackingDraft: {},

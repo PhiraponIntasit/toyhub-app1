@@ -9,6 +9,7 @@ import { renderLogin, renderSignup } from './views/auth.js';
 import { renderCheckout, mountStripeCheckout, resetCheckoutFailure } from './views/checkout.js';
 import { renderDone } from './views/done.js';
 import { renderOrders } from './views/orders.js';
+import { renderBalance, mountBalanceStripe, resetBalanceFailure } from './views/balance.js';
 import { renderWishlist } from './views/wishlist.js';
 import { renderContact } from './views/contact.js';
 import { renderAdmin } from './views/admin.js';
@@ -24,7 +25,7 @@ function routeMain(store) {
   const member = store.isMember();
 
   if (s.route === 'admin' && !admin) return renderLogin(store);
-  if ((s.route === 'orders' || s.route === 'wishlist') && !s.user) return renderLogin(store);
+  if ((s.route === 'orders' || s.route === 'wishlist' || s.route === 'balance') && !s.user) return renderLogin(store);
   if ((s.route === 'cart' || s.route === 'checkout') && admin) return renderAdmin(store);
 
   switch (s.route) {
@@ -37,6 +38,7 @@ function routeMain(store) {
     case 'checkout': return renderCheckout(store);
     case 'done': return renderDone(store);
     case 'orders': return member ? renderOrders(store) : renderLogin(store);
+    case 'balance': return member ? renderBalance(store) : renderLogin(store);
     case 'wishlist': return member ? renderWishlist(store) : renderLogin(store);
     case 'contact': return renderContact(store);
     case 'admin': return renderAdmin(store);
@@ -74,6 +76,7 @@ function render() {
   }
 
   if (s.route === 'checkout') mountStripeCheckout(store);
+  if (s.route === 'balance') mountBalanceStripe(store);
 }
 
 store.onChange = render;
@@ -90,6 +93,7 @@ async function onHashChange() {
   closeLightbox();
   if (route !== 'checkout') store.state.buyNow = null;
   if (route === 'checkout' && prevRoute !== 'checkout') resetCheckoutFailure();
+  if (route === 'balance' && prevRoute !== 'balance') resetBalanceFailure();
   render();
   if (route !== prevRoute) window.scrollTo(0, 0);
   if (route === 'admin' && store.isAdmin()) {

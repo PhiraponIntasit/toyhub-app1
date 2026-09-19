@@ -40,10 +40,13 @@ export const api = {
   createIntent: (body) => request('POST', '/api/checkout/create-intent', body),
   finalizeOrder: (body) => request('POST', '/api/checkout/finalize', body),
   myOrders: () => request('GET', '/api/orders/mine'),
+  balanceIntent: (ref) => request('POST', `/api/orders/${encodeURIComponent(ref)}/balance-intent`),
+  balanceFinalize: (ref, body) => request('POST', `/api/orders/${encodeURIComponent(ref)}/balance-finalize`, body),
 
   adminOrders: () => request('GET', '/api/admin/orders'),
   setOrderStatus: (ref, status) => request('PUT', `/api/admin/orders/${encodeURIComponent(ref)}/status`, { status }),
   setOrderTracking: (ref, tracking) => request('PUT', `/api/admin/orders/${encodeURIComponent(ref)}/tracking`, { tracking }),
   shipOrder: (ref, tracking) => request('POST', `/api/admin/orders/${encodeURIComponent(ref)}/ship`, { tracking }),
+  requestBalance: (ref) => request('POST', `/api/admin/orders/${encodeURIComponent(ref)}/request-balance`),
   deleteOrder: (ref) => request('DELETE', `/api/admin/orders/${encodeURIComponent(ref)}`)
 };

@@ -4,7 +4,7 @@ const { requireAuth, requireMember, requireAdmin } = require('../middleware/auth
 const { stripe, isConfigured, publishableKey } = require('../lib/stripe');
 const mailer = require('../lib/mailer');
 const { DEPOSIT_PCT } = require('../lib/helpers');
-const { loadOrder, loadOrders, resolveLines, totalsOf, writeOrder } = require('../lib/orders');
+const { loadOrder, loadOrders, resolveLines, totalsOf, writeOrder, carriageOutstanding, settleBalance } = require('../lib/orders');
 
 const router = express.Router();
 const money = (n) => '฿' + Number(n || 0).toLocaleString('en-US');
@@ -97,6 +97,61 @@ router.post('/checkout/finalize', requireMember, async (req, res) => {
   res.json({ order });
 });
 
+// Settling a balance is its own payment: a second intent against the order,
+// not a change to the one that took the deposit.
+router.post('/orders/:ref/balance-intent', requireMember, async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Payment gateway not configured.' });
+  const { rows } = await pool.query('SELECT * FROM orders WHERE ref = $1 AND user_id = $2', [req.params.ref, req.user.id]);
+  const order = rows[0];
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (!order.balance_requested_at) return res.status(400).json({ error: 'The shop has not asked for this balance yet.' });
+  if (order.balance_paid_at) return res.status(400).json({ error: 'This balance is already paid.' });
+
+  const due = Number(order.balance) + Number(order.balance_shipping);
+  if (due <= 0) return res.status(400).json({ error: 'Nothing left to pay.' });
+
+  let intent;
+  try {
+    intent = await stripe.paymentIntents.create({
+      amount: Math.round(due * 100), currency: 'thb', payment_method_types: ['card'],
+      metadata: { userId: req.user.id, orderRef: order.ref, kind: 'balance' }
+    });
+  } catch (err) {
+    console.error('Stripe rejected the balance intent —', err.type, err.code || '', err.message);
+    return res.status(502).json({ error: `Payment gateway: ${err.message}` });
+  }
+  res.json({ clientSecret: intent.client_secret, publishableKey, due });
+});
+
+router.post('/orders/:ref/balance-finalize', requireMember, async (req, res) => {
+  if (!isConfigured) return res.status(503).json({ error: 'Payment gateway not configured.' });
+  const paymentIntentId = String((req.body && req.body.paymentIntentId) || '');
+  if (!paymentIntentId) return res.status(400).json({ error: 'Missing payment reference.' });
+
+  const { rows } = await pool.query('SELECT * FROM orders WHERE ref = $1 AND user_id = $2', [req.params.ref, req.user.id]);
+  const order = rows[0];
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (order.balance_paid_at) return res.json({ order: await loadOrder(order.ref) });
+
+  let intent;
+  try {
+    intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  } catch (err) {
+    console.error('Stripe rejected the balance retrieve —', err.type, err.code || '', err.message);
+    return res.status(502).json({ error: `Payment gateway: ${err.message}` });
+  }
+  if (intent.metadata.orderRef !== order.ref) return res.status(403).json({ error: 'This payment belongs to another order.' });
+  if (intent.status !== 'succeeded') return res.status(400).json({ error: 'Payment has not completed yet.' });
+
+  const paid = await settleBalance(order, paymentIntentId);
+  await mailer.send({
+    orderRef: order.ref, kind: 'balance-paid', to: order.email,
+    subject: `ToyHub order ${order.ref} — balance received`,
+    body: `Thank you — ${money(paid)} received.\n\nYour piece is being packed and you will have a tracking number shortly.`
+  });
+  res.json({ order: await loadOrder(order.ref) });
+});
+
 router.get('/orders/mine', requireAuth, async (req, res) => {
   if (req.user.role === 'admin') return res.json({ orders: [] });
   const { rows } = await pool.query('SELECT ref FROM orders WHERE user_id = $1 ORDER BY created_at DESC', [req.user.id]);
@@ -108,7 +163,7 @@ router.get('/admin/orders', requireAdmin, async (req, res) => {
   res.json({ orders: await loadOrders(rows.map((r) => r.ref)) });
 });
 
-const ORDER_STATUSES = ['Confirmed', 'Producing', 'Ready to ship', 'Completed', 'Cancelled'];
+const ORDER_STATUSES = ['Confirmed', 'Producing', 'Balance due', 'Ready to ship', 'Completed', 'Cancelled'];
 
 router.put('/admin/orders/:ref/status', requireAdmin, async (req, res) => {
   const status = String((req.body && req.body.status) || '');
@@ -125,10 +180,41 @@ router.put('/admin/orders/:ref/tracking', requireAdmin, async (req, res) => {
   res.json({ order: await loadOrder(req.params.ref) });
 });
 
+// The piece has arrived: work out what is still owed and ask for it. The
+// carriage is fixed here at the figure the customer is about to be shown.
+router.post('/admin/orders/:ref/request-balance', requireAdmin, async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM orders WHERE ref = $1', [req.params.ref]);
+  const order = rows[0];
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (Number(order.balance) <= 0) return res.status(400).json({ error: 'This order has nothing left to pay.' });
+  if (order.balance_paid_at) return res.status(400).json({ error: 'The balance on this order is already paid.' });
+
+  const carriage = await carriageOutstanding(req.params.ref);
+  await pool.query(
+    `UPDATE orders SET status = 'Balance due', balance_shipping = $1, balance_requested_at = now() WHERE ref = $2`,
+    [carriage, req.params.ref]
+  );
+
+  const due = Number(order.balance) + carriage;
+  await mailer.send({
+    orderRef: req.params.ref, kind: 'balance', to: order.email,
+    subject: `ToyHub order ${req.params.ref} — balance due`,
+    body: `Your reserved piece has arrived at the shop.\n\n` +
+      `Balance on the piece: ${money(order.balance)}\nInsured carriage: ${money(carriage)}\n` +
+      `Due now: ${money(due)}\n\n` +
+      `Settle it from your orders page and we will send it on its way.`
+  });
+  res.json({ order: await loadOrder(req.params.ref) });
+});
+
 router.post('/admin/orders/:ref/ship', requireAdmin, async (req, res) => {
   const { rows } = await pool.query('SELECT * FROM orders WHERE ref = $1', [req.params.ref]);
   const order = rows[0];
   if (!order) return res.status(404).json({ error: 'Order not found.' });
+  // Goods do not leave with money outstanding.
+  if (Number(order.balance) > 0 && !order.balance_paid_at) {
+    return res.status(409).json({ error: 'The balance on this order has not been paid yet.' });
+  }
   const tracking = String((req.body && req.body.tracking) || order.tracking || '').trim();
   if (!tracking) return res.status(400).json({ error: 'Enter a tracking number first.' });
 

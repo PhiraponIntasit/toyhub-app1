@@ -25,6 +25,12 @@ function serializeOrder(row, items, emails) {
     subtotal: row.subtotal, shipping: row.shipping, total: row.total, balance: row.balance,
     cardLast4: row.card_last4, status: row.status, tracking: row.tracking,
     confirmedAt: row.confirmed_at, shippedAt: row.shipped_at, createdAt: row.created_at,
+    balanceShipping: Number(row.balance_shipping) || 0,
+    balanceRequestedAt: row.balance_requested_at, balancePaidAt: row.balance_paid_at,
+    // What the customer owes right now: nothing until the shop has asked.
+    balanceDue: row.balance_requested_at && !row.balance_paid_at
+      ? Number(row.balance) + (Number(row.balance_shipping) || 0)
+      : 0,
     items: (items || []).map((it) => ({
       productId: it.product_id, name: it.name, qty: it.qty, price: it.unit_price,
       due: it.unit_due, mode: it.mode, status: it.status, release: it.release_window

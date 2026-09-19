@@ -4,7 +4,7 @@ import { money, dateLabel, BRANDS, ACCENT, INK } from '../helpers.js';
 import { textField } from './forms.js';
 import { emptyState } from './common.js';
 
-const ORDER_STATUSES = ['Confirmed', 'Producing', 'Ready to ship', 'Completed', 'Cancelled'];
+const ORDER_STATUSES = ['Confirmed', 'Producing', 'Balance due', 'Ready to ship', 'Completed', 'Cancelled'];
 
 function tabButton(store, key, label) {
   const s = store.state;
@@ -50,14 +50,40 @@ function catalogueTab(store) {
   ]);
 }
 
+// What an order still owes, and the one action that moves it along.
+function balanceCell(store, o) {
+  if (o.balancePaidAt) return h('span', { style: 'font-size:12px;opacity:0.6' }, 'Settled ' + dateLabel(o.balancePaidAt));
+  if (Number(o.balance) <= 0) return h('span', { style: 'opacity:0.4' }, '—');
+  if (o.balanceRequestedAt) {
+    return h('div', {}, [
+      h('div', { style: 'color:var(--color-accent-700)' }, money(o.balanceDue)),
+      h('div', { style: 'font-size:11px;opacity:0.6' }, `asked ${dateLabel(o.balanceRequestedAt)} — awaiting payment`)
+    ]);
+  }
+  return h('div', { style: 'display:flex;flex-direction:column;gap:6px;align-items:flex-end' }, [
+    h('div', {}, money(o.balance)),
+    h('div', { style: 'font-size:11px;opacity:0.6' }, 'carriage not yet charged'),
+    h('button', {
+      class: 'btn btn-secondary', onclick: async () => {
+        try {
+          const { order } = await api.requestBalance(o.ref);
+          await store.refreshAdminData();
+          store.flash(`${order.ref} — ${money(order.balanceDue)} requested from ${order.email}`);
+        } catch (err) { store.flash(err.message); }
+      }
+    }, 'Request balance')
+  ]);
+}
+
 function ordersTab(store) {
   const s = store.state;
   const orders = s.adminOrders;
   return h('div', {}, [
     h('p', { style: 'font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch' }, 'Every paid order, newest first. The customer already has the confirmation email; entering a tracking number and sending it emails them a second time and closes the order as completed.'),
+    h('p', { style: 'font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch' }, 'A pre-order taken on a deposit shows what is still owed. Asking for it works out the carriage from the boxes as they stand today, emails the customer the figure and holds the order until it is paid — nothing ships with money outstanding.'),
     orders.length ? h('div', { 'data-scroll': true }, [
       h('table', { class: 'table tnum' }, [
-        h('thead', {}, [h('tr', {}, ['Reference', 'Customer', 'Pieces', 'Paid', 'State', 'Tracking', ''].map((t) => h('th', {}, t)))]),
+        h('thead', {}, [h('tr', {}, ['Reference', 'Customer', 'Pieces', 'Paid', 'Balance', 'State', 'Tracking', ''].map((t) => h('th', {}, t)))]),
         h('tbody', {}, orders.map((o) => {
           const trackingKey = `admin.tracking.${o.ref}`;
           const draftVal = s.trackingDraft[o.ref] !== undefined ? s.trackingDraft[o.ref] : o.tracking;
@@ -72,6 +98,7 @@ function ordersTab(store) {
             ]),
             h('td', { style: 'opacity:0.8;font-size:13px;white-space:pre-line' }, o.items.map((it) => `${it.qty} × ${it.name}` + (it.mode === 'deposit' ? ' (deposit)' : '')).join('\n')),
             h('td', { style: 'text-align:right' }, money(o.total)),
+            h('td', { style: 'text-align:right;white-space:nowrap' }, balanceCell(store, o)),
             h('td', {}, [
               h('select', {
                 class: 'input', style: 'min-width:160px', value: o.status,

@@ -97,4 +97,33 @@ async function writeOrder({ user, lines, totals, cardLast4, paymentIntentId }) {
   }
 }
 
-module.exports = { loadOrders, loadOrder, resolveLines, totalsOf, writeOrder };
+// What it will cost to send the part of an order still to come. Carriage is
+// not taken on a deposit — a window a year out would be quoted at rates long
+// since changed — so it is worked out here, from the boxes as they stand, at
+// the moment the shop asks for the balance.
+async function carriageOutstanding(ref) {
+  const { rows: items } = await pool.query("SELECT * FROM order_items WHERE order_ref = $1 AND mode = 'deposit'", [ref]);
+  if (!items.length) return 0;
+  const { rows: products } = await pool.query('SELECT * FROM products WHERE id = ANY($1)', [items.map((it) => it.product_id)]);
+  const byId = Object.fromEntries(products.map((p) => [p.id, p]));
+  const consignment = items
+    .filter((it) => byId[it.product_id])
+    .map((it) => ({ product: byId[it.product_id], qty: it.qty, mode: 'full' }));
+  return carriageFor(consignment);
+}
+
+// Applied once a balance payment has succeeded: the outstanding amount and the
+// carriage quoted alongside it move onto the order, which is then ready to go
+// out. Returns what was taken.
+async function settleBalance(order, paymentIntentId) {
+  const carriage = Number(order.balance_shipping) || 0;
+  const paid = Number(order.balance) + carriage;
+  await pool.query(
+    `UPDATE orders SET balance = 0, shipping = shipping + $1, total = total + $2,
+       status = 'Ready to ship', balance_paid_at = now(), balance_intent_id = $3 WHERE ref = $4`,
+    [carriage, paid, paymentIntentId, order.ref]
+  );
+  return paid;
+}
+
+module.exports = { loadOrders, loadOrder, resolveLines, totalsOf, writeOrder, carriageOutstanding, settleBalance };
