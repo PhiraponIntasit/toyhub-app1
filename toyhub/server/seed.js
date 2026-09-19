@@ -1,7 +1,21 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { pool } = require('./db');
-const { SEED_PRODUCTS, SEED_ADMIN } = require('./lib/seed');
+const { SEED_PRODUCTS, SEED_ADMIN, SEED_CUSTOMER } = require('./lib/seed');
+
+async function seedAccount(account) {
+  const { rows } = await pool.query('SELECT id FROM users WHERE email = $1', [account.email]);
+  if (rows.length) {
+    console.log(account.role === 'admin' ? 'Admin' : 'Demo customer', 'account already present, skipping');
+    return;
+  }
+  const hash = await bcrypt.hash(account.password, 10);
+  await pool.query(
+    `INSERT INTO users (id, email, password_hash, name, phone, address, role) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+    [crypto.randomUUID(), account.email, hash, account.name, account.phone, account.address, account.role]
+  );
+  console.log('Seeded', account.role, 'account:', account.email, '/', account.password);
+}
 
 async function seed() {
   const { rows: existing } = await pool.query('SELECT count(*)::int AS n FROM products');
@@ -18,17 +32,8 @@ async function seed() {
     console.log('Products already present, skipping product seed');
   }
 
-  const { rows: adminExisting } = await pool.query('SELECT id FROM users WHERE email = $1', [SEED_ADMIN.email]);
-  if (adminExisting.length === 0) {
-    const hash = await bcrypt.hash(SEED_ADMIN.password, 10);
-    await pool.query(
-      `INSERT INTO users (id, email, password_hash, name, phone, address, role) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [crypto.randomUUID(), SEED_ADMIN.email, hash, SEED_ADMIN.name, SEED_ADMIN.phone, SEED_ADMIN.address, SEED_ADMIN.role]
-    );
-    console.log('Seeded admin account:', SEED_ADMIN.email, '/', SEED_ADMIN.password);
-  } else {
-    console.log('Admin account already present, skipping');
-  }
+  await seedAccount(SEED_ADMIN);
+  await seedAccount(SEED_CUSTOMER);
 }
 
 if (require.main === module) {

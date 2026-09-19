@@ -11,7 +11,12 @@ administration area for the catalogue, the order desk and the customer inbox.
 | Role | Email | Password |
 | --- | --- | --- |
 | Customer | `somchai@example.com` | `demo1234` |
-| Shop administrator | `admin@toyhub.co` | `admin1234` |
+| Shop administrator | available on request | — |
+
+The administrator side of the demo is held back so that the catalogue survives — the
+order desk is the last screenshot below, and all of it is in
+[`public/js/views/admin.js`](toyhub/public/js/views/admin.js). Run it locally and the
+seed creates `admin@toyhub.co` / `admin1234`.
 
 Payments run in Stripe **test mode**: pay with card `4242 4242 4242 4242`, any future
 expiry, any CVC. No real money moves.

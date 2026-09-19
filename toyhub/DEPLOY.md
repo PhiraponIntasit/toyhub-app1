@@ -32,6 +32,10 @@ Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the same `.env` before running it.
 Without them the seed creates `admin@toyhub.co` / `admin1234`, which is printed
 in this repository — anyone who found the site could sign in and empty the shop.
 
+The seed also creates the demo customer the README hands out
+(`somchai@example.com` / `demo1234`) and the twelve pieces. It skips anything
+already there, so running it twice is harmless.
+
 Put your local `DATABASE_URL` back afterwards.
 
 In PowerShell you can avoid editing the file:

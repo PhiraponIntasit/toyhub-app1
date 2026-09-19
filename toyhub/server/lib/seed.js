@@ -24,4 +24,11 @@ const SEED_ADMIN = {
   phone: '02 000 0000', address: 'ToyHub, second floor bench', role: 'admin'
 };
 
-module.exports = { SEED_PRODUCTS, SEED_ADMIN };
+// A customer to look around as, so a deployed demo can be walked through
+// without registering first. Nothing is special about the account.
+const SEED_CUSTOMER = {
+  email: 'somchai@example.com', password: 'demo1234', name: 'Somchai Ratana',
+  phone: '081 234 5678', address: '88/2 Soi Ruam Ruedi\nLumphini, Pathum Wan\nBangkok 10330', role: 'user'
+};
+
+module.exports = { SEED_PRODUCTS, SEED_ADMIN, SEED_CUSTOMER };
