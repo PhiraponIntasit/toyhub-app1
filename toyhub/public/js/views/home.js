@@ -104,7 +104,7 @@ export function renderHome(store) {
           h('div', { class: 'imgslot', style: 'width:100%;aspect-ratio:5/4;border-radius:var(--radius-md);background:#fefbec;border-style:solid;overflow:hidden' }, [
             h('img', { src: 'images/toyhub-logo.webp', alt: 'ToyHub', style: 'object-fit:contain' })
           ]),
-          h('figcaption', {}, 'The bench, second floor.')
+          h('figcaption', {}, 'made with love, do with love.')
         ])
       ])
     ]),
