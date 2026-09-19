@@ -6,7 +6,7 @@ administration area for the catalogue, the order desk and the customer inbox.
 
 [![CI](https://github.com/PhiraponIntasit/toyhub-app1/actions/workflows/ci.yml/badge.svg)](https://github.com/PhiraponIntasit/toyhub-app1/actions/workflows/ci.yml)
 
-**Live demo — _add the URL here once deployed_**
+**Live demo — <https://toyhub-app1.vercel.app>**
 
 | Role | Email | Password |
 | --- | --- | --- |
