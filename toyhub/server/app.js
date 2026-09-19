@@ -36,11 +36,20 @@ app.use(loadUser);
 // most common deployment mistake is a connection string that reaches the wrong
 // host or port, and "unreachable" on its own does not say which.
 function dbTarget() {
+  const raw = process.env.DATABASE_URL || '';
+  if (!raw) return 'not configured';
   try {
-    const u = new URL(process.env.DATABASE_URL || '');
+    const u = new URL(raw);
     return `${u.hostname}:${u.port || '5432'}`;
   } catch (e) {
-    return process.env.DATABASE_URL ? 'unparseable connection string' : 'not configured';
+    // The value holds a password, so describe its shape rather than print it.
+    // These four are what a connection string pasted by hand gets wrong.
+    const faults = [];
+    if (!/^postgres(ql)?:\/\//.test(raw)) faults.push('does not start with postgresql:// — something is in front of it, such as psql, a quote mark or DATABASE_URL=');
+    if (/\s/.test(raw)) faults.push('contains a space or a line break');
+    if (/["']/.test(raw)) faults.push('contains a quote mark');
+    if (/[[\]]/.test(raw)) faults.push('still has the [YOUR-PASSWORD] placeholder brackets');
+    return 'unusable connection string: it ' + (faults.join('; it ') || 'could not be parsed');
   }
 }
 
