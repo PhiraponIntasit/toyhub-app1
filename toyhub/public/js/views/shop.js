@@ -1,5 +1,5 @@
 import { h } from '../dom.js';
-import { CATS, STATUSES, ACCENT, INK, money } from '../helpers.js';
+import { CATS, STATUSES, brandsOf, ACCENT, INK, money } from '../helpers.js';
 import { plateCard, emptyState } from './common.js';
 import { textField } from './forms.js';
 
@@ -7,6 +7,7 @@ function filteredProducts(s) {
   const q = s.q.trim().toLowerCase();
   let list = s.products.filter((p) =>
     (s.cat === 'All' || p.category === s.cat) &&
+    (s.brand === 'All' || p.line === s.brand) &&
     (s.status === 'All' || p.status === s.status) &&
     Number(p.price) <= Number(s.maxPrice) &&
     (!q || (p.name + ' ' + p.line + ' ' + p.category).toLowerCase().includes(q))
@@ -33,12 +34,23 @@ export function renderShop(store) {
   return h('main', { style: 'max-width:1200px;margin:0 auto;padding:40px 24px 80px' }, [
     h('div', { 'data-shopgrid': true, style: 'display:grid;grid-template-columns:238px minmax(0,1fr);gap:44px;align-items:start' }, [
       h('aside', { 'data-sticky': true, style: 'position:sticky;top:96px;display:flex;flex-direction:column;gap:26px' }, [
-        textField({ key: 'shop.q', label: 'Search', type: 'search', placeholder: 'Piece or atelier', value: s.q, set: (v) => store.set({ q: v }) }),
+        textField({ key: 'shop.q', label: 'Search', type: 'search', placeholder: 'Piece or brand', value: s.q, set: (v) => store.set({ q: v }) }),
         h('div', {}, [
           h('div', { style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px' }, 'Category'),
           h('div', { style: 'display:flex;flex-direction:column;gap:2px' }, [
             filterRow('All pieces', products.length, s.cat === 'All', () => store.set({ cat: 'All' })),
             ...CATS.map((c) => filterRow(c, products.filter((p) => p.category === c).length, s.cat === c, () => store.set({ cat: c })))
+          ])
+        ]),
+        h('div', {}, [
+          h('div', { style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px' }, 'Brand'),
+          h('div', { style: 'display:flex;flex-direction:column;gap:2px' }, [
+            filterRow('All brands', products.length, s.brand === 'All', () => store.set({ brand: 'All' })),
+            // Only brands with something on the shelf — an empty row is a dead end.
+            ...brandsOf(products)
+              .map((b) => [b, products.filter((p) => p.line === b).length])
+              .filter(([, n]) => n > 0)
+              .map(([b, n]) => filterRow(b, n, s.brand === b, () => store.set({ brand: b })))
           ])
         ]),
         h('div', {}, [
@@ -52,7 +64,7 @@ export function renderShop(store) {
           h('label', {}, `Ceiling — ${money(s.maxPrice)} and under`),
           h('input', { class: 'input', type: 'range', 'data-key': 'shop.maxPrice', min: 1000, max: priceMax, step: 500, value: s.maxPrice, style: 'padding:0;border:0;accent-color:var(--color-accent)', onInput: (e) => store.set({ maxPrice: Number(e.target.value) }) })
         ]),
-        h('button', { class: 'btn btn-secondary', onclick: () => store.set({ q: '', cat: 'All', status: 'All', maxPrice: 30000, sort: 'curated' }) }, 'Clear filters')
+        h('button', { class: 'btn btn-secondary', onclick: () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: 30000, sort: 'curated' }) }, 'Clear filters')
       ]),
       h('div', {}, [
         h('div', { style: 'display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--color-divider);padding-bottom:14px;margin-bottom:26px;flex-wrap:wrap' }, [
@@ -73,7 +85,7 @@ export function renderShop(store) {
         h('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:30px' },
           shop.map((p) => plateCard(store, p, { showActions: true }))),
         shop.length === 0 ? emptyState('Nothing under these terms', 'Loosen the ceiling or clear the filters to see the full cabinet.', 'Clear filters',
-          () => store.set({ q: '', cat: 'All', status: 'All', maxPrice: 30000, sort: 'curated' })) : null
+          () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: 30000, sort: 'curated' })) : null
       ])
     ])
   ]);

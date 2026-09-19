@@ -31,7 +31,7 @@ export function renderProduct(store) {
   };
 
   const specs = [
-    ['Atelier', pd.line], ['Category', pd.category], ['Scale', pd.scale || '—'],
+    ['Brand', pd.line], ['Category', pd.category], ['Scale', pd.scale || '—'],
     ['Edition', pd.edition || 'Open edition'], ['Shipping window', pd.release || 'Ships now'],
     ['Units left', String(stockOf(pd))], ['Reference', pd.id.toUpperCase()]
   ];

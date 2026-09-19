@@ -124,6 +124,10 @@ figcaption { font-size: 11px; margin-top: var(--space-1); color: color-mix(in sr
   font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
   background: transparent; border: 1px solid var(--color-divider); border-radius: var(--radius-md);
 }
+/* A native dropdown popup is painted by the OS on its own light background but
+   inherits the field's colour, which in the dark theme is near-white — so the
+   options need a background of their own to stay readable. */
+.input option, .input optgroup { background: var(--color-surface); color: var(--color-text); }
 .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
 textarea.input { min-height: 90px; resize: vertical; }

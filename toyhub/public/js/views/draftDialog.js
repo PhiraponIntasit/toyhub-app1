@@ -1,7 +1,33 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
-import { CATS, STATUSES } from '../helpers.js';
+import { CATS, STATUSES, brandsOf } from '../helpers.js';
 import { textField, textareaField } from './forms.js';
+
+const NEW_BRAND = '__new__';
+
+// A brand is picked from the ones the shop already carries, or typed once and
+// then carried by the piece — which is how a new brand comes into existence.
+function brandField(store, d, set) {
+  const known = brandsOf(store.state.products);
+  const adding = d.line === '' || (d.line && known.indexOf(d.line) === -1);
+  return h('div', { class: 'field' }, [
+    h('label', {}, 'Brand'),
+    h('select', {
+      class: 'input', value: adding ? NEW_BRAND : d.line,
+      onChange: (e) => {
+        set('line')(e.target.value === NEW_BRAND ? '' : e.target.value);
+        store.set({});
+      }
+    }, known.map((b) => h('option', { value: b }, b)).concat([
+      h('option', { value: NEW_BRAND }, 'Add a new brand…')
+    ])),
+    adding ? h('input', {
+      class: 'input', style: 'margin-top:8px', placeholder: 'New brand name',
+      value: d.line, 'data-key': 'draft.newBrand',
+      onInput: (e) => set('line')(e.target.value)
+    }) : null
+  ]);
+}
 
 export function renderDraftDialog(store) {
   const s = store.state;
@@ -37,7 +63,7 @@ export function renderDraftDialog(store) {
       h('div', { class: 'dialog-title' }, d.id ? 'Edit piece' : 'Add a piece'),
       h('div', { 'data-formgrid': true, style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px' }, [
         h('div', { style: 'grid-column:1 / -1' }, [textField({ key: 'draft.name', label: 'Piece name', placeholder: 'Vigil of the Lantern Keeper', value: d.name, set: set('name') })]),
-        textField({ key: 'draft.line', label: 'Atelier', placeholder: 'Kestrel Studio', value: d.line, set: set('line') }),
+        brandField(store, d, set),
         h('div', { class: 'field' }, [
           h('label', {}, 'Category'),
           h('select', { class: 'input', value: d.category, onChange: (e) => { set('category')(e.target.value); store.set({}); } },

@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
-import { money, dateLabel, ACCENT, INK } from '../helpers.js';
+import { money, dateLabel, BRANDS, ACCENT, INK } from '../helpers.js';
 import { textField } from './forms.js';
 import { emptyState } from './common.js';
 
@@ -28,7 +28,7 @@ function catalogueTab(store) {
     h('p', { style: 'font-size:13px;opacity:0.6;margin:0 0 20px;max-width:74ch' }, 'Up to four pieces can be featured in the homepage hero — marking a fifth releases the piece featured longest. Stock falls automatically as orders are paid, and a piece with no units left is marked sold out.'),
     h('div', { 'data-scroll': true }, [
       h('table', { class: 'table tnum' }, [
-        h('thead', {}, [h('tr', {}, ['Piece', 'Atelier', 'Category', 'Status', 'Stock', 'Price', 'Photos', ''].map((t) => h('th', {}, t)))]),
+        h('thead', {}, [h('tr', {}, ['Piece', 'Brand', 'Category', 'Status', 'Stock', 'Price', 'Photos', ''].map((t) => h('th', {}, t)))]),
         h('tbody', {}, s.products.map((p) => h('tr', {}, [
           h('td', {}, [
             h('div', { style: 'font-family:var(--font-heading);font-size:17px' }, p.name),
@@ -177,16 +177,8 @@ export function renderAdmin(store) {
       ]),
       h('div', { style: 'display:flex;gap:10px' }, [
         h('button', {
-          class: 'btn btn-secondary', onclick: async () => {
-            const { products } = await api.restoreSamples();
-            store.state.products = products;
-            store.flash('Sample catalogue restored');
-            store.set({});
-          }
-        }, 'Restore samples'),
-        h('button', {
           class: 'btn btn-primary',
-          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: '', category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', edition: '', featured: false, images: [], stock: 5, description: '' } })
+          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: BRANDS[0], category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', edition: '', featured: false, images: [], stock: 5, description: '' } })
         }, 'Add a piece')
       ])
     ]),

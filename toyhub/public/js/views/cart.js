@@ -43,7 +43,7 @@ export function renderCart(store) {
     h('p', { style: 'font-size:13px;opacity:0.6;margin:0 0 26px' }, 'Pre-order lines can be settled as a 30% deposit or in full. A deposit-only order carries no carriage — that is charged when the piece ships.'),
     lines.length ? h('div', {}, [
       h('table', { class: 'table tnum' }, [
-        h('thead', {}, [h('tr', {}, [h('th', {}, 'Piece'), h('th', {}, 'Atelier'), h('th', { style: 'text-align:center' }, 'Qty'), h('th', { style: 'text-align:right' }, 'Line'), h('th', {})])]),
+        h('thead', {}, [h('tr', {}, [h('th', {}, 'Piece'), h('th', {}, 'Brand'), h('th', { style: 'text-align:center' }, 'Qty'), h('th', { style: 'text-align:right' }, 'Line'), h('th', {})])]),
         h('tbody', {}, lines.map((p) => {
           const md = cartModeOf(store, p);
           const dep = md === 'deposit' && p.status === 'Pre-order';

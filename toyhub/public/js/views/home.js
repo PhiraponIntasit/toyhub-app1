@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { imgsOf, featuredOrder, pickRandom, money, bgUrl, MAX_FEATURED } from '../helpers.js';
-import { plateBg, plateCard, infoCard } from './common.js';
+import { plateBg, plateCard } from './common.js';
 
 // The hero plate opens the piece it is showing, so the image is as clickable as
 // the "View the plate" button beside it.
@@ -31,7 +31,6 @@ export function renderHome(store) {
   const heroImgs = hero ? imgsOf(hero) : [];
   const brands = Array.from(new Set(products.map((p) => p.line))).filter(Boolean);
   const featured = pickRandom(products, 4, s.seed);
-  const arrivals = products.slice(-3).reverse();
 
   return h('main', {}, [
     h('section', { style: 'max-width:1200px;margin:0 auto;padding:56px 24px 0' }, [
@@ -66,7 +65,7 @@ export function renderHome(store) {
 
     h('section', { 'data-reveal': true, style: 'max-width:1200px;margin:64px auto 0;padding:0 24px' }, [
       h('div', { style: 'display:flex;align-items:baseline;gap:18px;border-top:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:14px 0;flex-wrap:wrap' }, [
-        h('span', { style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55' }, 'Ateliers we carry'),
+        h('span', { style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55' }, 'Brands we carry'),
         h('div', { style: 'display:flex;flex-wrap:wrap;gap:26px;margin-left:auto' },
           brands.map((name) => h('span', { style: 'font-family:var(--font-heading);font-size:15px;letter-spacing:0.08em' }, name)))
       ])
@@ -87,22 +86,13 @@ export function renderHome(store) {
         featured.map((p) => plateCard(store, p, { showActions: false })))
     ]),
 
-    h('section', { 'data-reveal': true, style: 'max-width:1200px;margin:80px auto 0;padding:0 24px' }, [
-      h('div', { style: 'display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--color-divider);padding-bottom:12px;margin-bottom:24px' }, [
-        h('h2', { style: 'font-weight:400;margin:0' }, 'New arrivals'),
-        h('span', { class: 'tnum', style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55' }, `${String(products.length).padStart(2, '0')} pieces added`)
-      ]),
-      h('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px' },
-        arrivals.map((p) => infoCard(store, p, { body: 'short', metaRight: 'status' })))
-    ]),
-
     h('section', { id: 'story', 'data-reveal': true, style: 'max-width:1200px;margin:88px auto 0;padding:0 24px' }, [
       h('div', { 'data-col2': true, style: 'display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start;border-top:1px solid var(--color-divider);padding-top:34px' }, [
         h('div', {}, [
           h('div', { style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px' }, 'The shop'),
           h('h2', { style: 'font-size:34px;font-weight:400;margin:0 0 16px' }, 'A cabinet, not a toybox'),
           h('div', { 'data-cols2text': true, style: 'column-count:2;column-gap:32px;column-rule:1px solid var(--color-divider)' }, [
-            h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'ToyHub keeps a short list on purpose. Each piece is examined, photographed on the bench, and listed with its atelier, scale and edition size — nothing enters the cabinet unless we would keep it ourselves.'),
+            h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'ToyHub keeps a short list on purpose. Each piece is examined, photographed on the bench, and listed with its brand, scale and edition size — nothing enters the cabinet unless we would keep it ourselves.'),
             h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'Pre-orders are held at deposit and settled when the shipping window opens. Collectors are welcome to reserve a plate, ask for bench photographs, or leave a piece on hold while a shelf is being built for it.')
           ]),
           h('button', { class: 'btn btn-secondary', style: 'margin-top:22px', onclick: () => store.go('shop') }, 'Enter the catalogue')

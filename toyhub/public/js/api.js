@@ -26,7 +26,6 @@ export const api = {
   createProduct: (body) => request('POST', '/api/products', body),
   updateProduct: (id, body) => request('PUT', `/api/products/${encodeURIComponent(id)}`, body),
   deleteProduct: (id) => request('DELETE', `/api/products/${encodeURIComponent(id)}`),
-  restoreSamples: () => request('POST', '/api/products/admin/restore-samples'),
 
   wishlist: () => request('GET', '/api/wishlist'),
   toggleWishlist: (id) => request('POST', `/api/wishlist/${encodeURIComponent(id)}/toggle`),
