@@ -13,6 +13,7 @@ import { renderWishlist } from './views/wishlist.js';
 import { renderContact } from './views/contact.js';
 import { renderAdmin } from './views/admin.js';
 import { renderDraftDialog } from './views/draftDialog.js';
+import { closeLightbox } from './views/lightbox.js';
 import { toastNode } from './views/common.js';
 
 const appEl = document.getElementById('app');
@@ -83,6 +84,7 @@ async function onHashChange() {
   store.state.route = route;
   store.state.pid = pid;
   store.state.pdImgI = 0;
+  closeLightbox();
   if (route !== 'checkout') store.state.buyNow = null;
   if (route === 'checkout' && prevRoute !== 'checkout') resetCheckoutFailure();
   render();

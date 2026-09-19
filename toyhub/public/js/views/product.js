@@ -1,6 +1,7 @@
 import { h } from '../dom.js';
 import { imgsOf, stockOf, soldOutOf, dueOf, depositOf, money, bgUrl, DEPOSIT_PCT } from '../helpers.js';
 import { infoCard, emptyState } from './common.js';
+import { openLightbox } from './lightbox.js';
 
 export function renderProduct(store) {
   const s = store.state;
@@ -30,13 +31,18 @@ export function renderProduct(store) {
   const showPhoto = (i) => {
     const next = (i + imgs.length) % imgs.length;
     s.pdImgI = next;
-    const plate = document.querySelector('[data-gallery] [role="img"]');
+    const plate = document.querySelector('[data-gallery] [data-plate-img]');
     if (plate) plate.style.backgroundImage = bgUrl(imgs[next]);
     document.querySelectorAll('[data-thumb]').forEach((el) => {
       const on = Number(el.getAttribute('data-thumb')) === next;
       el.style.outlineColor = on ? 'var(--color-accent)' : 'var(--color-divider)';
     });
   };
+
+  // Stepping through the viewer keeps the page behind it on the same photograph.
+  const viewFullSize = () => openLightbox({
+    images: imgs, index: currentPhoto(), label: pd.name, onChange: showPhoto
+  });
 
   const buyNow = () => {
     if (admin) { store.flash('Administrator accounts cannot place orders'); return; }
@@ -59,7 +65,13 @@ export function renderProduct(store) {
       h('div', {}, [
         h('div', { 'data-plate': true, 'data-gallery': true, 'data-enter-slow': true, style: 'position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [
           imgs.length
-            ? h('div', { role: 'img', 'aria-label': pd.name, style: `position:absolute;inset:0;background-image:${bgUrl(imgs[imgI])};background-size:cover;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05)` })
+            ? h('div', {
+              'data-plate-img': true, role: 'button', tabindex: '0',
+              'aria-label': `View ${pd.name} full size`,
+              style: `position:absolute;inset:0;background-image:${bgUrl(imgs[imgI])};background-size:contain;background-repeat:no-repeat;background-position:center;filter:sepia(0.22) saturate(0.82) contrast(1.05);cursor:zoom-in`,
+              onclick: viewFullSize,
+              onKeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); viewFullSize(); } }
+            })
             : h('div', { style: 'position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:26px' }, [
               h('div', {}, [
                 h('div', { style: 'font-family:var(--font-heading);font-size:20px;margin-bottom:6px' }, 'Plate pending'),
