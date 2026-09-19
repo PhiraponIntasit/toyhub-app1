@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const { pool } = require('./db');
+const { pool, target } = require('./db');
 
 async function migrate() {
+  console.log('Database:', target());
   const dir = path.join(__dirname, 'migrations');
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
   for (const file of files) {

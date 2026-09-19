@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
-const { pool } = require('./db');
+const { pool, target: dbTarget } = require('./db');
 const { loadUser } = require('./middleware/auth');
 
 const authRoutes = require('./routes/auth').router;
@@ -31,27 +31,6 @@ app.use(session({
 }));
 
 app.use(loadUser);
-
-// Which endpoint the pool was pointed at, with the credentials left out — the
-// most common deployment mistake is a connection string that reaches the wrong
-// host or port, and "unreachable" on its own does not say which.
-function dbTarget() {
-  const raw = process.env.DATABASE_URL || '';
-  if (!raw) return 'not configured';
-  try {
-    const u = new URL(raw);
-    return `${u.hostname}:${u.port || '5432'}`;
-  } catch (e) {
-    // The value holds a password, so describe its shape rather than print it.
-    // These four are what a connection string pasted by hand gets wrong.
-    const faults = [];
-    if (!/^postgres(ql)?:\/\//.test(raw)) faults.push('does not start with postgresql:// — something is in front of it, such as psql, a quote mark or DATABASE_URL=');
-    if (/\s/.test(raw)) faults.push('contains a space or a line break');
-    if (/["']/.test(raw)) faults.push('contains a quote mark');
-    if (/[[\]]/.test(raw)) faults.push('still has the [YOUR-PASSWORD] placeholder brackets');
-    return 'unusable connection string: it ' + (faults.join('; it ') || 'could not be parsed');
-  }
-}
 
 const POOLER_NOTE = 'Supabase answers a direct connection over IPv6 only — use the transaction pooler on port 6543.';
 const DB_HINTS = {

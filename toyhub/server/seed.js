@@ -1,7 +1,11 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { pool } = require('./db');
+const { pool, target } = require('./db');
 const { SEED_PRODUCTS, SEED_ADMIN, SEED_CUSTOMER } = require('./lib/seed');
+
+// A password that came from the environment is the deployment's own, and the
+// terminal it is printed in is shared over someone's shoulder often enough.
+const shown = (account) => (process.env.ADMIN_PASSWORD && account.role === 'admin' ? '(the one in ADMIN_PASSWORD)' : account.password);
 
 async function seedAccount(account) {
   const { rows } = await pool.query('SELECT id FROM users WHERE email = $1', [account.email]);
@@ -14,10 +18,11 @@ async function seedAccount(account) {
     `INSERT INTO users (id, email, password_hash, name, phone, address, role) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
     [crypto.randomUUID(), account.email, hash, account.name, account.phone, account.address, account.role]
   );
-  console.log('Seeded', account.role, 'account:', account.email, '/', account.password);
+  console.log('Seeded', account.role, 'account:', account.email, '/', shown(account));
 }
 
 async function seed() {
+  console.log('Database:', target());
   const { rows: existing } = await pool.query('SELECT count(*)::int AS n FROM products');
   if (existing[0].n === 0) {
     for (const p of SEED_PRODUCTS) {
