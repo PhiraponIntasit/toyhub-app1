@@ -39,6 +39,8 @@ export function checkoutSelection(store) {
 export async function mountStripeCheckout(store) {
   const s = store.state;
   if (s.route !== 'checkout' || !store.isMember()) return;
+  // Never touch the Element while Stripe is confirming against it.
+  if (s.checkoutSubmitting) return;
   const { cart, mode } = checkoutSelection(store);
   const { lines } = totalsFor(store, cart, mode);
   if (!lines.length) return;
@@ -88,15 +90,32 @@ export async function mountStripeCheckout(store) {
   }
 }
 
+// While a payment is confirming the button cannot be redrawn through the store:
+// a render replaces the whole tree, which pulls the Stripe iframe out of the
+// document and remounts it, and Stripe then rejects the confirm with "could not
+// retrieve data from the specified Element". So it is updated where it stands.
+function setPayButton(label, disabled) {
+  const btn = document.querySelector('[data-key="checkout.pay"]');
+  if (!btn) return;
+  btn.textContent = label;
+  btn.disabled = disabled;
+}
+
 async function pay(store) {
   const s = store.state;
   if (!checkoutRuntime.stripe || !checkoutRuntime.elements) return;
-  store.set({ checkoutSubmitting: true, checkoutError: '' });
+  s.checkoutSubmitting = true;
+  s.checkoutError = '';
+  setPayButton('Processing…', true);
   try {
     const { error, paymentIntent } = await checkoutRuntime.stripe.confirmPayment({
       elements: checkoutRuntime.elements, redirect: 'if_required'
     });
-    if (error) { store.set({ checkoutSubmitting: false, checkoutError: error.message }); return; }
+    if (error) {
+      s.checkoutSubmitting = false;
+      store.set({ checkoutError: error.message });
+      return;
+    }
     const { order } = await api.finalizeOrder({ paymentIntentId: paymentIntent.id });
     checkoutRuntime.paymentElement = null;
     checkoutRuntime.clientSecret = null;
@@ -108,12 +127,15 @@ async function pay(store) {
       store.setMode({});
     }
     store.state.lastOrder = order;
-    store.state.checkoutSubmitting = false;
     await Promise.all([store.refreshProducts(), store.refreshMe()]);
     store.go('done');
+    // Cleared only once the checkout screen is behind us, so no render along
+    // the way tries to build a fresh intent for a cart that is already paid.
+    s.checkoutSubmitting = false;
     store.flash('Confirmation email sent to ' + order.email);
   } catch (err) {
-    store.set({ checkoutSubmitting: false, checkoutError: err.message });
+    s.checkoutSubmitting = false;
+    store.set({ checkoutError: err.message });
   }
 }
 
@@ -153,7 +175,7 @@ export function renderCheckout(store) {
         ]),
         s.checkoutError ? h('div', { style: 'font-size:12px;color:var(--color-accent-700)' }, s.checkoutError) : null,
         h('button', {
-          class: 'btn btn-primary btn-block', type: 'button',
+          class: 'btn btn-primary btn-block', type: 'button', 'data-key': 'checkout.pay',
           disabled: !s.stripeConfig.stripeConfigured || s.checkoutSubmitting,
           onclick: () => pay(store)
         }, s.checkoutSubmitting ? 'Processing…' : `Pay ${money(total)}`)
