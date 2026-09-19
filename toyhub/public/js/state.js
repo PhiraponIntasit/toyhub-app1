@@ -9,7 +9,8 @@ const HERO_MS = 7000;
 export const store = {
   state: {
     route: 'home', pid: null,
-    heroI: 0, pdImgI: 0, seed: String(Math.random()),
+    heroI: 0, pdImgI: 0, pdMode: 'deposit', pdQty: 1, pdEntered: false,
+    seed: String(Math.random()),
     products: [],
     cart: loadLocal(KEY_CART, {}),
     mode: loadLocal(KEY_MODE, {}),
@@ -117,24 +118,27 @@ export const store = {
     if (this.onChange) this.onChange();
   },
 
-  addToCart(p, payMode) {
+  addToCart(p, payMode, qty) {
     const admin = this.isAdmin();
     if (admin) { this.flash('Administrator accounts cannot place orders'); return; }
     if (!this.state.user) { this.go('login'); this.flash('Sign in to reserve a piece'); return; }
     if (soldOutOf(p)) { this.flash(p.name + ' is sold out — save it to be notified'); return; }
     const inCart = this.state.cart[p.id] || 0;
     if (inCart >= stockOf(p)) { this.flash('Only ' + stockOf(p) + ' left of ' + p.name); return; }
+    const wanted = Math.max(1, Number(qty) || 1);
+    const added = Math.min(wanted, stockOf(p) - inCart);
     const cart = Object.assign({}, this.state.cart);
-    cart[p.id] = inCart + 1;
+    cart[p.id] = inCart + added;
     this.setCart(cart);
+    const short = added < wanted ? ` — only ${added} could be added` : '';
     if (p.status === 'Pre-order') {
       const mode = Object.assign({}, this.state.mode);
       mode[p.id] = payMode === 'full' ? 'full' : 'deposit';
       this.setMode(mode);
-      this.flash(p.name + (payMode === 'full' ? ' reserved, paid in full' : ' reserved on a 30% deposit'));
+      this.flash(`${added} × ${p.name}` + (payMode === 'full' ? ' reserved, paid in full' : ' reserved on a 30% deposit') + short);
       return;
     }
-    this.flash(p.name + ' added to the cart');
+    this.flash(`${added} × ${p.name} added to the cart` + short);
   },
 
   async toggleWish(p) {

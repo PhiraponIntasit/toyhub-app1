@@ -32,7 +32,7 @@ export function resetCheckoutFailure() {
 // "Buy it now" checks out one piece on its own; otherwise the whole cart.
 export function checkoutSelection(store) {
   const b = store.state.buyNow;
-  if (b) return { cart: { [b.id]: 1 }, mode: { [b.id]: b.mode }, buyNow: b };
+  if (b) return { cart: { [b.id]: Math.max(1, Number(b.qty) || 1) }, mode: { [b.id]: b.mode }, buyNow: b };
   return { cart: store.state.cart, mode: store.state.mode, buyNow: null };
 }
 

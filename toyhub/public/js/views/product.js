@@ -3,6 +3,28 @@ import { imgsOf, stockOf, soldOutOf, dueOf, depositOf, money, bgUrl, DEPOSIT_PCT
 import { infoCard, emptyState } from './common.js';
 import { openLightbox } from './lightbox.js';
 
+const sectionLabel = (text) => h('div', {
+  style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:8px'
+}, text);
+
+// One way of paying, chosen rather than acted on — picking it changes what the
+// buttons below will do instead of putting the piece in the cart there and then.
+function payOption(store, { on, title, now, later, onSelect }) {
+  return h('button', {
+    class: 'lnk', 'aria-pressed': on ? 'true' : 'false', onclick: onSelect,
+    style: `display:flex;align-items:baseline;gap:12px;width:100%;text-align:left;padding:12px 14px;
+      border:1px solid ${on ? 'var(--color-accent)' : 'var(--color-divider)'};border-radius:var(--radius-md);
+      background:${on ? 'color-mix(in srgb, var(--color-accent) 8%, transparent)' : 'transparent'}`
+  }, [
+    h('span', { style: `width:14px;height:14px;flex:none;border-radius:50%;margin-top:3px;border:1px solid ${on ? 'var(--color-accent)' : 'var(--color-divider)'};background:${on ? 'var(--color-accent)' : 'transparent'}` }),
+    h('span', { style: 'flex:1' }, [
+      h('span', { style: 'display:block;font-size:14px' }, title),
+      h('span', { class: 'tnum', style: 'display:block;font-size:12px;opacity:0.7;margin-top:2px' }, later)
+    ]),
+    h('span', { class: 'price', style: 'font-size:16px;white-space:nowrap' }, now)
+  ]);
+}
+
 export function renderProduct(store) {
   const s = store.state;
   const pd = s.products.find((p) => p.id === s.pid);
@@ -12,13 +34,21 @@ export function renderProduct(store) {
     ]);
   }
   const admin = store.isAdmin();
-  const canBuy = !admin;
   const imgs = imgsOf(pd);
   const imgI = Math.min(s.pdImgI, Math.max(imgs.length - 1, 0));
-  const soldOut = soldOutOf(pd) || admin;
-  const isPreorder = pd.status === 'Pre-order' && !soldOutOf(pd) && canBuy;
-  const isStocked = pd.status !== 'Pre-order' || soldOutOf(pd) || admin;
+  const canOrder = !admin && !soldOutOf(pd);
+  const isPreorder = pd.status === 'Pre-order' && canOrder;
   const wished = s.wishIds.indexOf(pd.id) > -1;
+  // Nothing is committed until Add to cart or Buy it now: these only say what
+  // those buttons will do.
+  const mode = pd.status === 'Pre-order' ? (s.pdMode === 'full' ? 'full' : 'deposit') : 'full';
+  const maxQty = Math.max(stockOf(pd), 1);
+  const qty = Math.min(Math.max(1, Number(s.pdQty) || 1), maxQty);
+
+  // The entrance animation belongs to arriving at the piece, not to every
+  // render — without this it replays each time a payment option is chosen.
+  const entering = !s.pdEntered;
+  s.pdEntered = true;
   const related = s.products.filter((p) => p.id !== pd.id && p.line === pd.line)
     .concat(s.products.filter((p) => p.id !== pd.id && p.line !== pd.line)).slice(0, 4);
 
@@ -48,7 +78,7 @@ export function renderProduct(store) {
     if (admin) { store.flash('Administrator accounts cannot place orders'); return; }
     if (!s.user) { store.go('login'); store.flash('Sign in to buy this piece'); return; }
     if (soldOutOf(pd)) { store.flash(pd.name + ' is sold out'); return; }
-    s.buyNow = { id: pd.id, mode: pd.status === 'Pre-order' ? 'deposit' : 'full' };
+    s.buyNow = { id: pd.id, mode, qty };
     s.checkoutError = '';
     store.go('checkout');
   };
@@ -63,7 +93,7 @@ export function renderProduct(store) {
     h('button', { class: 'btn btn-ghost', style: 'margin-bottom:22px', onclick: () => store.go('shop') }, '← Catalogue'),
     h('div', { 'data-col2': true, style: 'display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.95fr);gap:56px;align-items:start' }, [
       h('div', {}, [
-        h('div', { 'data-plate': true, 'data-gallery': true, 'data-enter-slow': true, style: 'position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [
+        h('div', { 'data-plate': true, 'data-gallery': true, 'data-enter-slow': entering, style: 'position:relative;aspect-ratio:4/5;background:var(--color-surface);border:8px solid var(--color-surface);outline:1px solid var(--color-divider);overflow:hidden' }, [
           imgs.length
             ? h('div', {
               'data-plate-img': true, role: 'button', tabindex: '0',
@@ -95,31 +125,54 @@ export function renderProduct(store) {
           }))) : null
       ]),
       h('div', {}, [
-        h('div', { 'data-enter': true, style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)' }, pd.line),
-        h('h1', { 'data-enter': true, style: 'font-size:clamp(30px,3.4vw,44px);font-weight:400;margin:10px 0 14px;animation-delay:.06s' }, pd.name),
-        h('p', { 'data-enter': true, class: 'just', style: 'font-size:15px;opacity:0.85;max-width:52ch;animation-delay:.12s' }, pd.description),
+        h('div', { 'data-enter': entering, style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)' }, pd.line),
+        h('h1', { 'data-enter': entering, style: 'font-size:clamp(30px,3.4vw,44px);font-weight:400;margin:10px 0 14px;animation-delay:.06s' }, pd.name),
+        h('p', { 'data-enter': entering, class: 'just', style: 'font-size:15px;opacity:0.85;max-width:52ch;animation-delay:.12s' }, pd.description),
         h('div', { class: 'tnum', style: 'display:flex;align-items:baseline;gap:16px;margin:24px 0 20px;border-top:1px solid var(--color-divider);padding-top:18px' }, [
           h('span', { class: 'price', style: 'font-size:30px' }, money(pd.price)),
           h('span', { class: 'tag tag-outline' }, pd.status)
         ]),
         h('div', { class: 'tnum', style: 'font-size:12px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.65;margin-bottom:14px' },
           soldOutOf(pd) ? 'Sold out' : (admin ? `${stockOf(pd)} left in stock` : (pd.status === 'Pre-order' ? 'Open for reservation' : 'Available now'))),
-        isPreorder ? h('div', { style: 'border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:18px;margin-bottom:18px' }, [
-          h('div', { style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px' }, 'Pre-order terms'),
-          h('div', { class: 'tnum', style: 'font-size:14px' }, `Shipping window ${pd.release || 'to be announced'}`),
-          h('p', { class: 'just', style: 'font-size:13px;opacity:0.78;margin:8px 0 14px;max-width:48ch' }, 'Reservations close one month before the window opens. Take it on a 30% deposit — the balance and insured carriage fall due when the piece ships — or settle it in full today.'),
-          h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' }, [
-            h('button', { class: 'btn btn-primary', disabled: soldOut, onclick: () => store.addToCart(pd, 'deposit') }, `Reserve — ${money(depositOf(pd))} deposit`),
-            h('button', { class: 'btn btn-secondary', disabled: soldOut, onclick: () => store.addToCart(pd, 'full') }, `Pay in full — ${money(pd.price)}`),
-            h('button', { class: 'btn btn-ghost', disabled: soldOut, onclick: buyNow }, 'Pre-order it now →')
+        isPreorder ? h('div', { style: 'margin-bottom:18px' }, [
+          sectionLabel('Payment'),
+          h('div', { style: 'display:flex;flex-direction:column;gap:8px' }, [
+            payOption(store, {
+              on: mode === 'deposit',
+              title: `Deposit ${DEPOSIT_PCT}%`,
+              now: money(depositOf(pd) * qty),
+              later: `Balance ${money((Number(pd.price) - depositOf(pd)) * qty)} + carriage when it ships`,
+              onSelect: () => store.set({ pdMode: 'deposit' })
+            }),
+            payOption(store, {
+              on: mode === 'full',
+              title: 'Full payment',
+              now: money(Number(pd.price) * qty),
+              later: 'Carriage when it ships',
+              onSelect: () => store.set({ pdMode: 'full' })
+            })
+          ]),
+          h('p', { style: 'font-size:12px;opacity:0.65;margin:10px 0 0;max-width:48ch' },
+            `Reservations close one month before the shipping window ${pd.release ? `(${pd.release})` : ''} opens.`)
+        ]) : null,
+
+        canOrder ? h('div', { style: 'margin-bottom:18px' }, [
+          sectionLabel('Quantity'),
+          h('div', { style: 'display:flex;align-items:center;gap:14px;flex-wrap:wrap' }, [
+            h('div', { style: 'display:flex;align-items:center;border:1px solid var(--color-divider);border-radius:var(--radius-md)' }, [
+              h('button', { class: 'lnk', style: 'width:38px;height:38px;font-size:18px', 'aria-label': 'One fewer', disabled: qty <= 1, onclick: () => store.set({ pdQty: qty - 1 }) }, '−'),
+              h('span', { class: 'tnum', style: 'min-width:34px;text-align:center;font-size:15px' }, String(qty)),
+              h('button', { class: 'lnk', style: 'width:38px;height:38px;font-size:18px', 'aria-label': 'One more', disabled: qty >= maxQty, onclick: () => store.set({ pdQty: qty + 1 }) }, '+')
+            ]),
+            h('span', { class: 'tnum', style: 'font-size:13px;opacity:0.75' },
+              `Due now ${money(dueOf(pd, mode) * qty)}`)
           ])
         ]) : null,
+
         h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, [
-          isStocked ? h('button', {
-            class: 'btn btn-primary', disabled: soldOut,
-            onclick: () => store.addToCart(pd)
-          }, admin ? 'Staff account — ordering disabled' : (soldOutOf(pd) ? 'Sold out' : (pd.status === 'Pre-order' ? 'Reserve with deposit' : 'Add to cart'))) : null,
-          isStocked ? h('button', { class: 'btn btn-secondary', disabled: soldOut, onclick: buyNow }, 'Buy it now') : null,
+          canOrder ? h('button', { class: 'btn btn-primary', onclick: () => store.addToCart(pd, mode, qty) }, 'Add to cart') : null,
+          canOrder ? h('button', { class: 'btn btn-secondary', onclick: buyNow }, 'Buy it now') : null,
+          admin ? h('button', { class: 'btn btn-primary', disabled: true }, 'Staff account — ordering disabled') : null,
           h('button', { class: 'btn btn-secondary', onclick: () => store.toggleWish(pd) },
             wished ? '♥ Saved' : (soldOutOf(pd) ? '♡ Notify me when back' : '♡ Save this piece'))
         ]),

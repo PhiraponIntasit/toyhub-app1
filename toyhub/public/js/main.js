@@ -84,6 +84,9 @@ async function onHashChange() {
   store.state.route = route;
   store.state.pid = pid;
   store.state.pdImgI = 0;
+  store.state.pdMode = 'deposit';
+  store.state.pdQty = 1;
+  store.state.pdEntered = false;
   closeLightbox();
   if (route !== 'checkout') store.state.buyNow = null;
   if (route === 'checkout' && prevRoute !== 'checkout') resetCheckoutFailure();
