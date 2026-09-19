@@ -21,6 +21,23 @@ export function renderProduct(store) {
   const related = s.products.filter((p) => p.id !== pd.id && p.line === pd.line)
     .concat(s.products.filter((p) => p.id !== pd.id && p.line !== pd.line)).slice(0, 4);
 
+  // Swapping the plate in place rather than through the store: a render rebuilds
+  // the whole page, which replays the entrance animation on the name and the
+  // description — read as a flicker every time the photograph changed.
+  // Without a render there is nothing to recompute imgI, so the arrows step from
+  // whatever is on screen now rather than from the index this pass was drawn with.
+  const currentPhoto = () => Math.min(s.pdImgI, Math.max(imgs.length - 1, 0));
+  const showPhoto = (i) => {
+    const next = (i + imgs.length) % imgs.length;
+    s.pdImgI = next;
+    const plate = document.querySelector('[data-gallery] [role="img"]');
+    if (plate) plate.style.backgroundImage = bgUrl(imgs[next]);
+    document.querySelectorAll('[data-thumb]').forEach((el) => {
+      const on = Number(el.getAttribute('data-thumb')) === next;
+      el.style.outlineColor = on ? 'var(--color-accent)' : 'var(--color-divider)';
+    });
+  };
+
   const buyNow = () => {
     if (admin) { store.flash('Administrator accounts cannot place orders'); return; }
     if (!s.user) { store.go('login'); store.flash('Sign in to buy this piece'); return; }
@@ -51,18 +68,18 @@ export function renderProduct(store) {
             ]),
           imgs.length > 1 ? h('button', {
             class: 'gallery-nav', style: 'left:10px', 'aria-label': 'Previous photograph',
-            onclick: () => store.set({ pdImgI: (imgI + imgs.length - 1) % imgs.length })
+            onclick: () => showPhoto(currentPhoto() - 1)
           }, '‹') : null,
           imgs.length > 1 ? h('button', {
             class: 'gallery-nav', style: 'right:10px', 'aria-label': 'Next photograph',
-            onclick: () => store.set({ pdImgI: (imgI + 1) % imgs.length })
+            onclick: () => showPhoto(currentPhoto() + 1)
           }, '›') : null
         ]),
         imgs.length > 1 ? h('div', { style: 'display:flex;gap:10px;margin-top:12px;flex-wrap:wrap' },
           imgs.map((src, i) => h('button', {
-            class: 'lnk', 'aria-label': 'View photograph',
-            style: `width:64px;height:78px;background-image:url("${src}");background-size:cover;background-position:center;border:4px solid var(--color-surface);outline:1px solid ${i === imgI ? 'var(--color-accent)' : 'var(--color-divider)'};filter:sepia(0.22) saturate(0.82) contrast(1.05)`,
-            onclick: () => store.set({ pdImgI: i })
+            class: 'lnk', 'aria-label': 'View photograph', 'data-thumb': String(i),
+            style: `width:64px;height:78px;background-image:${bgUrl(src)};background-size:cover;background-position:center;border:4px solid var(--color-surface);outline:1px solid ${i === imgI ? 'var(--color-accent)' : 'var(--color-divider)'};filter:sepia(0.22) saturate(0.82) contrast(1.05)`,
+            onclick: () => showPhoto(i)
           }))) : null
       ]),
       h('div', {}, [
