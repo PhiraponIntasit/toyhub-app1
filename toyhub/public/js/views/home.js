@@ -97,10 +97,13 @@ export function renderHome(store) {
           h('button', { class: 'btn btn-secondary', style: 'margin-top:22px', onclick: () => store.go('shop') }, 'Enter the catalogue')
         ]),
         h('figure', {}, [
-          h('div', { class: 'imgslot', style: 'width:100%;aspect-ratio:5/4;border-radius:var(--radius-md)' }, [
-            h('span', { style: 'font-size:12px;opacity:0.55;max-width:22ch' }, 'The bench, second floor')
+          // The logo art sits on its own cream field, so the slot carries the same
+          // colour and the image is contained rather than cropped — the panel reads
+          // as one plate instead of a letterboxed picture.
+          h('div', { class: 'imgslot', style: 'width:100%;aspect-ratio:5/4;border-radius:var(--radius-md);background:#fefbec;border-style:solid;overflow:hidden' }, [
+            h('img', { src: 'images/toyhub-logo.webp', alt: 'ToyHub', style: 'object-fit:contain' })
           ]),
-          h('figcaption', {}, 'made with love, do with love')
+          h('figcaption', {}, 'The bench, second floor.')
         ])
       ])
     ]),

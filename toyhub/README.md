@@ -73,6 +73,6 @@ public/             Static frontend (served as-is, no build step)
 - If stock changes between adding to cart and finalizing payment, the order
   is created with whatever stock remains (mirrors the prototype's lenient
   behavior) rather than blocking a captured payment.
-- The story section's bench photograph is a fixed placeholder — per the
-  design chat, editing it was explicitly locked for everyone, including
-  admins.
+- The story section's plate is fixed in the markup (`public/images/toyhub-logo.webp`)
+  — per the design chat, editing it from the app was explicitly locked for
+  everyone, including admins. Swap the file to change it.
