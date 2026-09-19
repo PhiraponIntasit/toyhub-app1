@@ -22,7 +22,7 @@ export const store = {
     adminOrders: [],
     adminMessages: [],
     demand: [],
-    q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: 30000, sort: 'curated',
+    q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: null, sort: 'curated',
     draft: null, draftError: false,
     adminTab: 'catalogue',
     toast: '',

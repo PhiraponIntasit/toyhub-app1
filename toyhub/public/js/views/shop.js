@@ -9,7 +9,7 @@ function filteredProducts(s) {
     (s.cat === 'All' || p.category === s.cat) &&
     (s.brand === 'All' || p.line === s.brand) &&
     (s.status === 'All' || p.status === s.status) &&
-    Number(p.price) <= Number(s.maxPrice) &&
+    (s.maxPrice == null || Number(p.price) <= Number(s.maxPrice)) &&
     (!q || (p.name + ' ' + p.line + ' ' + p.category).toLowerCase().includes(q))
   );
   if (s.sort === 'low') list = list.slice().sort((a, b) => a.price - b.price);
@@ -22,8 +22,11 @@ export function renderShop(store) {
   const s = store.state;
   const products = s.products;
   const shop = filteredProducts(s);
+  // The ceiling starts off the whole catalogue — a fixed default would hide any
+  // piece dearer than it, and go stale the moment a dearer one is added.
   const prices = products.map((p) => Number(p.price) || 0);
-  const priceMax = Math.max(30000, ...prices, 30000);
+  const priceMax = Math.ceil(Math.max(1000, ...prices) / 500) * 500;
+  const ceiling = s.maxPrice == null ? priceMax : Math.min(s.maxPrice, priceMax);
 
   const filterRow = (label, count, active, onClick) => h('button', {
     class: 'lnk',
@@ -61,10 +64,10 @@ export function renderShop(store) {
           ])
         ]),
         h('div', { class: 'field' }, [
-          h('label', {}, `Ceiling — ${money(s.maxPrice)} and under`),
-          h('input', { class: 'input', type: 'range', 'data-key': 'shop.maxPrice', min: 1000, max: priceMax, step: 500, value: s.maxPrice, style: 'padding:0;border:0;accent-color:var(--color-accent)', onInput: (e) => store.set({ maxPrice: Number(e.target.value) }) })
+          h('label', {}, s.maxPrice == null ? 'Ceiling — any price' : `Ceiling — ${money(ceiling)} and under`),
+          h('input', { class: 'input', type: 'range', 'data-key': 'shop.maxPrice', min: 1000, max: priceMax, step: 500, value: ceiling, style: 'padding:0;border:0;accent-color:var(--color-accent)', onInput: (e) => store.set({ maxPrice: Number(e.target.value) }) })
         ]),
-        h('button', { class: 'btn btn-secondary', onclick: () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: 30000, sort: 'curated' }) }, 'Clear filters')
+        h('button', { class: 'btn btn-secondary', onclick: () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: null, sort: 'curated' }) }, 'Clear filters')
       ]),
       h('div', {}, [
         h('div', { style: 'display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--color-divider);padding-bottom:14px;margin-bottom:26px;flex-wrap:wrap' }, [
@@ -85,7 +88,7 @@ export function renderShop(store) {
         h('div', { style: 'display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:30px' },
           shop.map((p) => plateCard(store, p, { showActions: true }))),
         shop.length === 0 ? emptyState('Nothing under these terms', 'Loosen the ceiling or clear the filters to see the full cabinet.', 'Clear filters',
-          () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: 30000, sort: 'curated' })) : null
+          () => store.set({ q: '', cat: 'All', brand: 'All', status: 'All', maxPrice: null, sort: 'curated' })) : null
       ])
     ])
   ]);
