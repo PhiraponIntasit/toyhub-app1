@@ -35,12 +35,20 @@ router.post('/checkout/create-intent', requireMember, async (req, res) => {
     userId: req.user.id,
     items: JSON.stringify(lines.map((l) => ({ id: l.product.id, qty: l.qty, mode: l.mode })))
   };
-  const intent = await stripe.paymentIntents.create({
-    amount: Math.round(totals.total * 100),
-    currency: 'thb',
-    payment_method_types: ['card'],
-    metadata
-  });
+  let intent;
+  try {
+    intent = await stripe.paymentIntents.create({
+      amount: Math.round(totals.total * 100),
+      currency: 'thb',
+      payment_method_types: ['card'],
+      metadata
+    });
+  } catch (err) {
+    // Without this the visitor only sees "something went wrong": a rejected key
+    // or a currency the account cannot take looks identical to a server crash.
+    console.error('Stripe rejected paymentIntents.create —', err.type, err.code || '', err.message);
+    return res.status(502).json({ error: `Payment gateway: ${err.message}` });
+  }
   res.json({ clientSecret: intent.client_secret, publishableKey, amount: totals.total, totals });
 });
 
@@ -55,7 +63,13 @@ router.post('/checkout/finalize', requireMember, async (req, res) => {
     return res.json({ order });
   }
 
-  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ['payment_method'] });
+  let intent;
+  try {
+    intent = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ['payment_method'] });
+  } catch (err) {
+    console.error('Stripe rejected paymentIntents.retrieve —', err.type, err.code || '', err.message);
+    return res.status(502).json({ error: `Payment gateway: ${err.message}` });
+  }
   if (intent.metadata.userId !== req.user.id) return res.status(403).json({ error: 'This payment does not belong to your account.' });
   if (intent.status !== 'succeeded') return res.status(400).json({ error: 'Payment has not completed yet.' });
 

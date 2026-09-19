@@ -111,7 +111,7 @@ async function init() {
     try { await store.refreshAdminData(); } catch (e) { store.flash(e.message); }
   }
 
-  store._heroTimer = setInterval(() => { if (store.state.route === 'home') store.set({ heroI: store.state.heroI + 1 }); }, 7000);
+  store.startHeroRotation();
 }
 
 init();
