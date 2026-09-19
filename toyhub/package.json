@@ -1,13 +1,14 @@
 {
   "name": "toyhub",
   "version": "1.0.0",
-  "description": "",
+  "description": "A collectible-figure storefront: Express + PostgreSQL + Stripe, with a no-build-step frontend.",
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "migrate": "node server/migrate.js",
-    "seed": "node server/seed.js"
+    "seed": "node server/seed.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
   },
   "keywords": [],
   "author": "",
@@ -20,5 +21,8 @@
     "express-session": "^1.19.0",
     "pg": "^8.23.0",
     "stripe": "^22.6.2"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

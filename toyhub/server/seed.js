@@ -29,11 +29,12 @@ async function seed() {
   } else {
     console.log('Admin account already present, skipping');
   }
-
-  await pool.end();
 }
 
-seed().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  seed()
+    .then(() => pool.end())
+    .catch((err) => { console.error(err); process.exit(1); });
+}
+
+module.exports = { seed };

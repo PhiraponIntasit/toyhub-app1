@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="Statues plate">
+  <defs>
+    <radialGradient id="bgp3b" cx="50%" cy="38%" r="78%">
+      <stop offset="0%" stop-color="#e8e2d4"/>
+      <stop offset="100%" stop-color="#cbc2ae"/>
+    </radialGradient>
+    <linearGradient id="vigp3b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b5f4a" stop-opacity="0.16"/>
+      <stop offset="45%" stop-color="#6b5f4a" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#6b5f4a" stop-opacity="0.28"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bgp3b)"/>
+  <ellipse cx="400" cy="700" rx="300" ry="54" fill="#6b5f4a" opacity="0.13"/>
+  
+    <g transform="translate(400 470) scale(1.32)">
+      <path d="M0-250c26 0 44 20 44 46 0 18-9 32-22 40 44 20 76 66 88 134l24 150H-134l24-150c12-68 44-114 88-134-13-8-22-22-22-40 0-26 18-46 44-46z" fill="#8d7f66"/>
+      <path d="M0-204c30 0 56 18 72 48-22 14-46 22-72 22s-50-8-72-22c16-30 42-48 72-48z" fill="#6b5f4a" opacity="0.45"/>
+      <path d="M96-40l0-96" stroke="#6b5f4a" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="96" cy="-14" r="30" fill="#b68235" opacity="0.85"/>
+      <circle cx="96" cy="-14" r="15" fill="#e8e2d4" opacity="0.9"/>
+    </g>
+  
+  <ellipse cx="400" cy="738" rx="210" ry="26" fill="#6b5f4a" opacity="0.18"/>
+  <rect x="236" y="712" width="328" height="34" rx="4" fill="#6b5f4a" opacity="0.55"/>
+  <rect x="252" y="698" width="296" height="16" rx="3" fill="#8d7f66" opacity="0.7"/>
+  <rect width="800" height="1000" fill="url(#vigp3b)"/>
+  <rect x="26" y="26" width="748" height="948" fill="none" stroke="#6b5f4a" stroke-opacity="0.22"/>
+  <text x="52" y="948" font-family="Georgia, 'Times New Roman', serif" font-size="25" fill="#6b5f4a" fill-opacity="0.5">Nihon Atelier</text>
+  <text x="748" y="948" text-anchor="end" font-family="Georgia, 'Times New Roman', serif" font-size="25" fill="#6b5f4a" fill-opacity="0.5">1/7</text>
+</svg>
