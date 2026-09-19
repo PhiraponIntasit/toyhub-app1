@@ -99,7 +99,7 @@ export function renderProduct(store) {
         ]),
         // Written by the shop in the piece dialog; absent until someone writes it.
         pd.details ? h('div', { style: 'margin-top:34px;border-top:1px solid var(--color-divider);padding-top:20px' }, [
-          h('h2', { style: 'font-size:17px;font-weight:400;margin:0 0 10px' }, "What's Included"),
+          h('h2', { style: 'font-size:23px;margin:0 0 12px' }, "What's Included"),
           h('p', { style: 'font-size:14px;opacity:0.85;margin:0;white-space:pre-line' }, pd.details)
         ]) : null
       ])
