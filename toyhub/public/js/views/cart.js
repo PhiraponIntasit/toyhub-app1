@@ -78,7 +78,7 @@ export function renderCart(store) {
           balance > 0 ? h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;font-size:13px;opacity:0.7' }, [h('span', {}, 'Balance on shipping'), h('span', {}, money(balance))]) : null,
           h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--color-divider);padding-top:10px' }, [
             h('span', { style: 'font-size:13px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7' }, 'Due now'),
-            h('span', { style: 'font-family:var(--font-heading);font-size:24px' }, money(total))
+            h('span', { class: 'price', style: 'font-size:24px' }, money(total))
           ]),
           h('button', {
             class: 'btn btn-primary btn-block', onclick: () => {

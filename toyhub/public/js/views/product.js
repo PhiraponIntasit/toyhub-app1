@@ -99,7 +99,7 @@ export function renderProduct(store) {
         h('h1', { 'data-enter': true, style: 'font-size:clamp(30px,3.4vw,44px);font-weight:400;margin:10px 0 14px;animation-delay:.06s' }, pd.name),
         h('p', { 'data-enter': true, class: 'just', style: 'font-size:15px;opacity:0.85;max-width:52ch;animation-delay:.12s' }, pd.description),
         h('div', { class: 'tnum', style: 'display:flex;align-items:baseline;gap:16px;margin:24px 0 20px;border-top:1px solid var(--color-divider);padding-top:18px' }, [
-          h('span', { style: 'font-family:var(--font-heading);font-size:30px' }, money(pd.price)),
+          h('span', { class: 'price', style: 'font-size:30px' }, money(pd.price)),
           h('span', { class: 'tag tag-outline' }, pd.status)
         ]),
         h('div', { class: 'tnum', style: 'font-size:12px;letter-spacing:0.06em;text-transform:uppercase;opacity:0.65;margin-bottom:14px' },

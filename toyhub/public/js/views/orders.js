@@ -27,7 +27,7 @@ function orderCard(o) {
       ]))),
     h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;border-top:1px solid var(--color-divider);margin-top:12px;padding-top:10px;font-size:14px' }, [
       h('span', { style: 'opacity:0.7' }, 'Paid'),
-      h('span', { style: 'font-family:var(--font-heading);font-size:20px' }, money(o.total))
+      h('span', { class: 'price', style: 'font-size:20px' }, money(o.total))
     ]),
     o.balance > 0 ? h('div', { class: 'tnum', style: 'font-size:12px;opacity:0.65;margin-top:6px' }, `Balance due when the window opens — ${money(o.balance)} (plus carriage)`) : null,
     h('div', { style: 'border-top:1px solid var(--color-divider);margin-top:14px;padding-top:12px;display:flex;flex-direction:column;gap:8px' },

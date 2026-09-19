@@ -41,7 +41,7 @@ export function renderHome(store) {
           h('h1', { 'data-enter': true, style: 'font-size:clamp(38px,4.4vw,62px);font-weight:400;margin:0 0 18px;animation-delay:.06s' }, hero ? hero.name : 'No pieces catalogued'),
           h('p', { 'data-enter': true, class: 'just', style: 'max-width:44ch;font-size:15px;opacity:0.85;animation-delay:.12s' }, hero ? hero.description : 'Add your first piece from the Admin screen.'),
           h('div', { class: 'tnum', style: 'display:flex;align-items:baseline;gap:14px;margin:26px 0 22px' }, [
-            h('span', { style: 'font-family:var(--font-heading);font-size:26px' }, hero ? money(hero.price) : ''),
+            h('span', { class: 'price', style: 'font-size:26px' }, hero ? money(hero.price) : ''),
             h('span', { style: 'font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6' }, hero ? hero.status : '')
           ]),
           h('div', { style: 'display:flex;gap:10px' }, [

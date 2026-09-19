@@ -195,7 +195,7 @@ export function renderCheckout(store) {
         h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;font-size:13px' }, [h('span', { style: 'opacity:0.7' }, 'Insured carriage'), h('span', {}, shipping ? money(shipping) : '—')]),
         h('div', { class: 'tnum', style: 'display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--color-divider);margin-top:10px;padding-top:10px' }, [
           h('span', { style: 'font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7' }, 'Due now'),
-          h('span', { style: 'font-family:var(--font-heading);font-size:24px' }, money(total))
+          h('span', { class: 'price', style: 'font-size:24px' }, money(total))
         ])
       ])
     ])
