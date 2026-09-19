@@ -24,7 +24,6 @@ export function renderLogin(store) {
         h('div', { style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700)' }, 'Members'),
         h('h1', { 'data-enter': true, style: 'font-size:40px;font-weight:400;margin:10px 0 16px' }, 'Sign in'),
         h('p', { class: 'just', style: 'font-size:14px;opacity:0.8;max-width:42ch' }, 'Reserving a plate or settling a pre-order requires an account. Shop staff sign in here as well — administrator accounts manage the catalogue and cannot place orders.'),
-        h('div', { style: 'font-size:12px;opacity:0.6;margin-top:18px;border-top:1px solid var(--color-divider);padding-top:14px' }, 'Demo administrator — admin@toyhub.co / admin1234')
       ]),
       h('form', { style: 'display:flex;flex-direction:column;gap:14px;border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:26px', onSubmit: submit }, [
         textField({ key: 'auth.email', label: 'Email', type: 'email', placeholder: 'you@example.com', value: s.authForm.email, set: (v) => { s.authForm = Object.assign({}, s.authForm, { email: v }); } }),
