@@ -3,6 +3,11 @@ export const CARRIAGE = 890;
 export const MAX_FEATURED = 4;
 export const CATS = ['Figures', 'Statues', 'Busts', 'Dioramas', 'Accessories'];
 export const STATUSES = ['In stock', 'Pre-order', 'Sold out'];
+// The brands the shop starts with. An administrator adds others from the piece
+// dialog, and they join this list for as long as a piece carries them.
+export const BRANDS = ['Inart', 'UPFinegures/LPZZ', 'Hot Toys'];
+export const brandsOf = (products) =>
+  Array.from(new Set(BRANDS.concat((products || []).map((p) => p.line)))).filter(Boolean).sort();
 export const ACCENT = 'var(--color-accent-700)';
 export const INK = 'var(--color-text)';
 

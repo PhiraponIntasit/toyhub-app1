@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const { pool } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 const { serializeProduct, MAX_FEATURED } = require('../lib/helpers');
-const { SEED_PRODUCTS } = require('../lib/seed');
 
 const router = express.Router();
 const STATUSES = ['In stock', 'Pre-order', 'Sold out'];
@@ -103,19 +102,6 @@ router.put('/:id', requireAdmin, async (req, res) => {
 router.delete('/:id', requireAdmin, async (req, res) => {
   await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
   res.json({ ok: true });
-});
-
-router.post('/admin/restore-samples', requireAdmin, async (req, res) => {
-  await pool.query('DELETE FROM products');
-  for (const p of SEED_PRODUCTS) {
-    await pool.query(
-      `INSERT INTO products (id, name, line, category, scale, price, status, release_window, edition, featured, featured_at, images, stock, description)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
-      [p.id, p.name, p.line, p.category, p.scale, p.price, p.status, p.release_window, p.edition, p.featured, p.featured_at, p.images, p.stock, p.description]
-    );
-  }
-  const rows = await allProducts();
-  res.json({ products: rows.map(serializeProduct) });
 });
 
 module.exports = router;
