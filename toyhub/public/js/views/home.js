@@ -92,7 +92,7 @@ export function renderHome(store) {
           h('div', { style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px' }, 'The shop'),
           h('h2', { style: 'font-size:34px;font-weight:400;margin:0 0 16px' }, 'A cabinet, not a toybox'),
           h('div', { 'data-cols2text': true, style: 'column-count:2;column-gap:32px;column-rule:1px solid var(--color-divider)' }, [
-            h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'ToyHub keeps a short list on purpose. Each piece is examined, photographed on the bench, and listed with its brand, scale and edition size — nothing enters the cabinet unless we would keep it ourselves.'),
+            h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'ToyHub keeps a short list on purpose. Each piece is examined, photographed on the bench, and listed with its brand, scale and what comes in the box — nothing enters the cabinet unless we would keep it ourselves.'),
             h('p', { class: 'just', style: 'font-size:14px;opacity:0.85' }, 'Pre-orders are held at deposit and settled when the shipping window opens. Collectors are welcome to reserve a plate, ask for bench photographs, or leave a piece on hold while a shelf is being built for it.')
           ]),
           h('button', { class: 'btn btn-secondary', style: 'margin-top:22px', onclick: () => store.go('shop') }, 'Enter the catalogue')

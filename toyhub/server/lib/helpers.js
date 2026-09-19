@@ -11,9 +11,10 @@ function dueOf(p, mode) { return p.status === 'Pre-order' && mode !== 'full' ? d
 function serializeProduct(row) {
   return {
     id: row.id, name: row.name, line: row.line, category: row.category, scale: row.scale,
-    price: row.price, status: row.status, release: row.release_window, edition: row.edition,
+    price: row.price, status: row.status, release: row.release_window,
     featured: row.featured, featuredAt: Number(row.featured_at) || 0,
-    images: row.images || [], stock: row.stock, description: row.description
+    images: row.images || [], stock: row.stock, description: row.description,
+    details: row.details || ''
   };
 }
 

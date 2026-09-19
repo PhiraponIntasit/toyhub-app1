@@ -82,6 +82,29 @@ test('only an administrator may change the catalogue', async () => {
   assert.equal(after.body.products.length, 12);
 });
 
+test("What's Included survives a round trip, and edition is gone", async () => {
+  const admin = client();
+  await admin('POST', '/api/auth/login', { email: 'admin@toyhub.co', password: 'admin1234' });
+
+  const details = 'One figure, fully assembled\nDisplay base\nTwo interchangeable hands';
+  const created = await admin('POST', '/api/products', {
+    name: 'Details Piece', price: 500, stock: 2, category: 'Figures', status: 'In stock', details
+  });
+  assert.equal(created.body.product.details, details, 'line breaks are kept verbatim');
+  assert.equal('edition' in created.body.product, false);
+
+  const edited = await admin('PUT', `/api/products/${created.body.product.id}`, {
+    name: 'Details Piece', price: 500, stock: 2, category: 'Figures', status: 'In stock', details: 'Just the figure'
+  });
+  assert.equal(edited.body.product.details, 'Just the figure');
+
+  const listed = (await client()('GET', '/api/products')).body.products
+    .find((p) => p.id === created.body.product.id);
+  assert.equal(listed.details, 'Just the figure');
+
+  await admin('DELETE', `/api/products/${created.body.product.id}`);
+});
+
 test('a wishlist belongs to a signed-in member and toggles', async () => {
   assert.equal((await client()('GET', '/api/wishlist')).status, 401);
 

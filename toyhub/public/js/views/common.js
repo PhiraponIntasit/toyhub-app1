@@ -19,7 +19,10 @@ export function productCardData(store, p) {
     priceLabel: money(p.price),
     scaleLabel: p.scale && p.scale !== '—' ? p.scale : p.category,
     short: (p.description || '').slice(0, 96),
-    stockNote: out ? 'Sold out — you are on the notify list.' : stockOf(p) + ' available' + (p.status === 'Pre-order' ? ' to reserve' : ''),
+    // Only staff are told how many are left; a customer sees whether it can be had.
+    stockNote: out ? 'Sold out — you are on the notify list.'
+      : admin ? stockOf(p) + ' left in stock'
+        : (p.status === 'Pre-order' ? 'Open for reservation' : 'Available now'),
     soldOut: out || admin,
     addLabel: admin ? 'Staff' : (out ? 'Sold out' : (p.status === 'Pre-order' ? 'Reserve' : 'Add')),
     wishGlyph: wished ? '♥' : '♡',

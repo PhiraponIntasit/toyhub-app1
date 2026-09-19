@@ -8,9 +8,9 @@ async function seed() {
   if (existing[0].n === 0) {
     for (const p of SEED_PRODUCTS) {
       await pool.query(
-        `INSERT INTO products (id, name, line, category, scale, price, status, release_window, edition, featured, featured_at, images, stock, description)
+        `INSERT INTO products (id, name, line, category, scale, price, status, release_window, featured, featured_at, images, stock, description, details)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
-        [p.id, p.name, p.line, p.category, p.scale, p.price, p.status, p.release_window, p.edition, p.featured, p.featured_at, p.images, p.stock, p.description]
+        [p.id, p.name, p.line, p.category, p.scale, p.price, p.status, p.release_window, p.featured, p.featured_at, p.images, p.stock, p.description, p.details]
       );
     }
     console.log('Seeded', SEED_PRODUCTS.length, 'products');

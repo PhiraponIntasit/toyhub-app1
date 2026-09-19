@@ -57,11 +57,11 @@ router.post('/', requireAdmin, async (req, res) => {
   const images = Array.isArray(b.images) ? b.images.filter(Boolean) : [];
 
   const { rows } = await pool.query(
-    `INSERT INTO products (id, name, line, category, scale, price, status, release_window, edition, featured, featured_at, images, stock, description)
+    `INSERT INTO products (id, name, line, category, scale, price, status, release_window, featured, featured_at, images, stock, description, details)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
     [id, name, String(b.line || '').trim(), category, String(b.scale || '').trim(), price, finalStatus,
-      String(b.release || '').trim(), String(b.edition || '').trim(), featured, featured ? Date.now() : 0,
-      images, stock, String(b.description || '').trim()]
+      String(b.release || '').trim(), featured, featured ? Date.now() : 0,
+      images, stock, String(b.description || '').trim(), String(b.details || '').trim()]
   );
   const released = await enforceFeaturedCap();
   const { rows: refreshed } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
@@ -89,10 +89,10 @@ router.put('/:id', requireAdmin, async (req, res) => {
 
   await pool.query(
     `UPDATE products SET name=$1, line=$2, category=$3, scale=$4, price=$5, status=$6, release_window=$7,
-       edition=$8, featured=$9, featured_at=$10, images=$11, stock=$12, description=$13 WHERE id=$14`,
+       featured=$8, featured_at=$9, images=$10, stock=$11, description=$12, details=$13 WHERE id=$14`,
     [name, String(b.line || '').trim(), category, String(b.scale || '').trim(), price, finalStatus,
-      String(b.release || '').trim(), String(b.edition || '').trim(), featured, featuredAt,
-      images, stock, String(b.description || '').trim(), req.params.id]
+      String(b.release || '').trim(), featured, featuredAt,
+      images, stock, String(b.description || '').trim(), String(b.details || '').trim(), req.params.id]
   );
   const released = await enforceFeaturedCap();
   const { rows: refreshed } = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);

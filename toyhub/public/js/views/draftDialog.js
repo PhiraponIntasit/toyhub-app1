@@ -43,9 +43,9 @@ export function renderDraftDialog(store) {
     if (!d.name.trim()) { store.set({ draftError: true }); return; }
     const body = {
       name: d.name, line: d.line, category: d.category, scale: d.scale,
-      price: Number(d.price) || 0, status: d.status, release: d.release, edition: d.edition,
+      price: Number(d.price) || 0, status: d.status, release: d.release,
       featured: !!d.featured, images: d.images || [], stock: Math.max(0, Number(d.stock) || 0),
-      description: d.description
+      description: d.description, details: d.details || ''
     };
     try {
       const { product, released } = d.id ? await api.updateProduct(d.id, body) : await api.createProduct(body);
@@ -77,7 +77,6 @@ export function renderDraftDialog(store) {
             STATUSES.map((st) => h('option', { value: st }, st)))
         ]),
         textField({ key: 'draft.release', label: 'Shipping window', placeholder: 'Q1 2027', value: d.release, set: set('release') }),
-        textField({ key: 'draft.edition', label: 'Edition', placeholder: 'Edition of 500', value: d.edition, set: set('edition') }),
         h('div', { class: 'field' }, [
           h('label', {}, 'Featured in the homepage hero (max 4)'),
           h('select', { class: 'input', value: d.featured ? 'yes' : 'no', onChange: (e) => { set('featured')(e.target.value === 'yes'); store.set({}); } }, [
@@ -106,7 +105,14 @@ export function renderDraftDialog(store) {
           })
         ]),
         h('div', { style: 'grid-column:1 / -1' }, [
-          textareaField({ key: 'draft.description', label: 'Description', placeholder: 'Bench notes, materials, what ships in the box.', value: d.description, set: set('description') })
+          textareaField({ key: 'draft.description', label: 'Description — the short summary under the piece name', placeholder: 'Bench notes and materials.', value: d.description, set: set('description') })
+        ]),
+        h('div', { style: 'grid-column:1 / -1' }, [
+          textareaField({
+            key: 'draft.details', label: "What's Included — one line per item, shown on the product page only",
+            placeholder: 'One figure, fully assembled\nDisplay base\nTwo interchangeable hands',
+            value: d.details || '', set: set('details')
+          })
         ])
       ]),
       s.draftError ? h('div', { style: 'font-size:12px;color:var(--color-accent-700)' }, 'A piece needs a name before it can be saved.') : null,

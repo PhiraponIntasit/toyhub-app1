@@ -32,7 +32,7 @@ function catalogueTab(store) {
         h('tbody', {}, s.products.map((p) => h('tr', {}, [
           h('td', {}, [
             h('div', { style: 'font-family:var(--font-heading);font-size:17px' }, p.name),
-            h('div', { style: 'font-size:11px;opacity:0.55;margin-top:2px' }, p.featured ? 'Featured in the hero' : (p.edition || 'Open edition'))
+            p.featured ? h('div', { style: 'font-size:11px;opacity:0.55;margin-top:2px' }, 'Featured in the hero') : null
           ]),
           h('td', { style: 'opacity:0.75' }, p.line),
           h('td', { style: 'opacity:0.75' }, p.category),
@@ -178,7 +178,7 @@ export function renderAdmin(store) {
       h('div', { style: 'display:flex;gap:10px' }, [
         h('button', {
           class: 'btn btn-primary',
-          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: BRANDS[0], category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', edition: '', featured: false, images: [], stock: 5, description: '' } })
+          onclick: () => store.set({ adminTab: 'catalogue', draftError: false, draft: { id: '', name: '', line: BRANDS[0], category: 'Figures', scale: '1/6', price: 9900, status: 'In stock', release: '', featured: false, images: [], stock: 5, description: '', details: '' } })
         }, 'Add a piece')
       ])
     ]),
