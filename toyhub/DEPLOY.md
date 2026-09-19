@@ -80,6 +80,21 @@ $env:DATABASE_URL="postgres://…:6543/postgres"; $env:ADMIN_PASSWORD="…"; npm
 
 Then put the URL at the top of the [README](../README.md).
 
+## Moving a catalogue you built locally
+
+The seed puts twelve pieces on a new database. Anything added through the admin
+screens since then lives only in the database it was added to, so pieces built
+up on a laptop have to be carried across:
+
+```bash
+node scripts/copy-catalogue.js "postgres://…@localhost:5432/toyhub" "postgresql://…:6543/postgres"
+```
+
+It copies the products table only, and skips any piece whose id the target
+already has — so it adds without overwriting, and running it twice changes
+nothing the second time. Orders, customers and wishlists are left where they
+are; they belong to the shop that took them.
+
 ## Notes
 
 - **No real money.** The Stripe keys are test keys; the publishable key is
