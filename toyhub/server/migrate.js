@@ -11,10 +11,12 @@ async function migrate() {
     await pool.query(sql);
   }
   console.log('Migrations complete');
-  await pool.end();
 }
 
-migrate().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  migrate()
+    .then(() => pool.end())
+    .catch((err) => { console.error(err); process.exit(1); });
+}
+
+module.exports = { migrate };

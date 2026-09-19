@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="Dioramas plate">
+  <defs>
+    <radialGradient id="bgp10a" cx="50%" cy="38%" r="78%">
+      <stop offset="0%" stop-color="#e2e0d8"/>
+      <stop offset="100%" stop-color="#bfbcaf"/>
+    </radialGradient>
+    <linearGradient id="vigp10a" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5c5749" stop-opacity="0.16"/>
+      <stop offset="45%" stop-color="#5c5749" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#5c5749" stop-opacity="0.28"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bgp10a)"/>
+  <ellipse cx="400" cy="700" rx="300" ry="54" fill="#5c5749" opacity="0.13"/>
+  
+    <g transform="translate(400 500) scale(1)">
+      <rect x="-190" y="60" width="380" height="80" rx="6" fill="#5c5749" opacity="0.5"/>
+      <path d="M-150 60V-40l112-78 112 78v100z" fill="#7d7767"/>
+      <path d="M-176-34L-38-130 100-34z" fill="#5c5749" opacity="0.65"/>
+      <rect x="-82" y="-14" width="58" height="74" fill="#e2e0d8" opacity="0.55"/>
+      <rect x="12" y="-14" width="42" height="42" fill="#9c7a42" opacity="0.6"/>
+      <rect x="132" y="-70" width="14" height="130" rx="7" fill="#5c5749"/>
+      <circle cx="139" cy="-82" r="20" fill="#9c7a42" opacity="0.8"/>
+    </g>
+  
+  <ellipse cx="400" cy="714" rx="210" ry="26" fill="#5c5749" opacity="0.18"/>
+  <rect x="236" y="688" width="328" height="34" rx="4" fill="#5c5749" opacity="0.55"/>
+  <rect x="252" y="674" width="296" height="16" rx="3" fill="#7d7767" opacity="0.7"/>
+  <rect width="800" height="1000" fill="url(#vigp10a)"/>
+  <rect x="26" y="26" width="748" height="948" fill="none" stroke="#5c5749" stroke-opacity="0.22"/>
+  <text x="52" y="948" font-family="Georgia, 'Times New Roman', serif" font-size="25" fill="#5c5749" fill-opacity="0.5">Nihon Atelier</text>
+  <text x="748" y="948" text-anchor="end" font-family="Georgia, 'Times New Roman', serif" font-size="25" fill="#5c5749" fill-opacity="0.5">1/12</text>
+</svg>

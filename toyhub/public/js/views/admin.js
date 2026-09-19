@@ -80,18 +80,20 @@ function ordersTab(store) {
             ]),
             h('td', {}, [
               h('div', { style: 'display:flex;flex-direction:column;gap:6px;min-width:190px' }, [
-                textField(store, {
+                textField({
                   key: trackingKey, placeholder: 'TH1234567890', value: draftVal,
                   set: (v) => { s.trackingDraft = Object.assign({}, s.trackingDraft, { [o.ref]: v }); }
                 }),
                 h('button', {
                   class: 'btn btn-secondary', onclick: async () => {
+                    // Typing no longer re-renders, so read what is in the field now.
+                    const tracking = s.trackingDraft[o.ref] !== undefined ? s.trackingDraft[o.ref] : o.tracking;
                     try {
-                      await api.shipOrder(o.ref, draftVal);
+                      await api.shipOrder(o.ref, tracking);
                       const next = Object.assign({}, s.trackingDraft); delete next[o.ref];
                       s.trackingDraft = next;
                       await store.refreshAdminData();
-                      store.flash('Tracking ' + draftVal + ' emailed to ' + o.email + ' — ' + o.ref + ' completed');
+                      store.flash('Tracking ' + tracking + ' emailed to ' + o.email + ' — ' + o.ref + ' completed');
                     } catch (err) { store.flash(err.message); }
                   }
                 }, o.tracking ? 'Re-send tracking' : 'Send tracking & complete')

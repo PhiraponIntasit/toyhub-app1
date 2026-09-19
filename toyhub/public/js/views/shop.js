@@ -33,7 +33,7 @@ export function renderShop(store) {
   return h('main', { style: 'max-width:1200px;margin:0 auto;padding:40px 24px 80px' }, [
     h('div', { 'data-shopgrid': true, style: 'display:grid;grid-template-columns:238px minmax(0,1fr);gap:44px;align-items:start' }, [
       h('aside', { 'data-sticky': true, style: 'position:sticky;top:96px;display:flex;flex-direction:column;gap:26px' }, [
-        textField(store, { key: 'shop.q', label: 'Search', type: 'search', placeholder: 'Piece or atelier', value: s.q, set: (v) => store.set({ q: v }) }),
+        textField({ key: 'shop.q', label: 'Search', type: 'search', placeholder: 'Piece or atelier', value: s.q, set: (v) => store.set({ q: v }) }),
         h('div', {}, [
           h('div', { style: 'font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:10px' }, 'Category'),
           h('div', { style: 'display:flex;flex-direction:column;gap:2px' }, [

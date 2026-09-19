@@ -1,25 +1,144 @@
-# CODING AGENTS: READ THIS FIRST
+# ToyHub
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+A storefront for collectible figures — browse a catalogue, reserve a pre-order on a
+deposit, pay by card, and track the order through to delivery. Behind it sits a shop
+administration area for the catalogue, the order desk and the customer inbox.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+[![CI](https://github.com/PhiraponIntasit/toyhub-app1/actions/workflows/ci.yml/badge.svg)](https://github.com/PhiraponIntasit/toyhub-app1/actions/workflows/ci.yml)
 
-## What you should do — IMPORTANT
+**Live demo — _add the URL here once deployed_**
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+| Role | Email | Password |
+| --- | --- | --- |
+| Customer | `somchai@example.com` | `demo1234` |
+| Shop administrator | `admin@toyhub.co` | `admin1234` |
 
-**Read `project/ToyHub.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+Payments run in Stripe **test mode**: pay with card `4242 4242 4242 4242`, any future
+expiry, any CVC. No real money moves.
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+---
 
-## About the design files
+![The storefront](toyhub/docs/screenshots/01-home.png)
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+| | |
+| --- | --- |
+| ![Catalogue](toyhub/docs/screenshots/02-catalogue.png) | ![A piece](toyhub/docs/screenshots/03-product.png) |
+| ![Order history](toyhub/docs/screenshots/04-orders.png) | ![Order desk](toyhub/docs/screenshots/06-admin-orders.png) |
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## What it does
 
-## Bundle contents
+**For a customer** — filter the catalogue by category, availability and price; save
+pieces to a wishlist; add to a cart or buy a single piece outright. A pre-order can be
+taken on a 30% deposit with the balance due when it ships, or settled in full. Card
+details are collected by Stripe Elements and never reach this server. Past orders,
+their state and the emails sent about them are all on one page.
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `ToyHub Online Store Scope` project files (HTML prototypes, assets, components)
+**For the shop** — add, edit and delete pieces, choose the four that lead the homepage,
+and watch stock fall automatically as orders come in. The order desk moves an order
+through its states and sends a tracking number. The inbox holds customer enquiries, and
+a demand tab counts how many people have saved each piece — including ones that are
+sold out.
+
+## How it is built
+
+Node.js + Express + PostgreSQL on the server. The frontend is plain HTML, CSS and
+JavaScript — native ES modules, **no framework and no build step**. The browser loads
+the same files that are in the repository.
+
+Decisions worth explaining:
+
+**Prices and stock are always recomputed from the database.** The browser sends only
+which piece and how many; every amount charged is derived server-side in
+[`resolveLines`](toyhub/server/lib/orders.js). A tampered cart cannot change a price.
+
+**An order is written in one transaction.** The order row, its lines and the stock they
+consume commit together or not at all, and stock is decremented in SQL
+(`stock - $1`) rather than from a value read earlier, so two checkouts racing cannot
+overwrite each other's figure.
+
+**No `innerHTML` anywhere.** The DOM is built through a small
+[`h()` helper](toyhub/public/js/dom.js) that only ever sets text nodes and attributes,
+so a product name or a customer message cannot inject markup. Every SQL statement is
+parameterised.
+
+**Sessions live in Postgres,** not in memory — passwords are bcrypt-hashed, the cookie
+is `httpOnly` and `secure` in production, and the app is stateless enough to run on
+serverless functions.
+
+**Rendering is a full redraw, deliberately.** State changes rebuild the tree rather than
+diffing it, which keeps the code small; typing is exempt from it, since a redraw per
+keystroke both flickers and destroys what is being typed.
+
+```
+toyhub/
+  server/
+    app.js            express wiring (exported — index.js listens, api/ serves)
+    db.js             pg Pool, TLS and pool size by environment
+    migrations/       SQL schema
+    routes/           auth, products, wishlist, messages, orders/checkout
+    lib/              pricing helpers, order reading/writing, mailer, stripe
+  public/             served as-is
+    js/views/         one module per screen
+    images/plates/    catalogue artwork
+  test/               node:test suites
+  api/index.js        Vercel entry point
+```
+
+## Running it locally
+
+Needs Node 20+ and PostgreSQL.
+
+```bash
+cd toyhub
+npm install
+cp .env.example .env     # set DATABASE_URL and SESSION_SECRET
+npm run migrate
+npm run seed
+npm start                # http://localhost:3000
+```
+
+Stripe keys are optional. Without them the app runs in full and checkout shows a
+"payment gateway not configured" notice instead of failing; with the free test keys
+from <https://dashboard.stripe.com/test/apikeys> checkout completes end to end.
+
+## Tests
+
+```bash
+createdb toyhub_test
+TEST_DATABASE_URL=postgres://…/toyhub_test npm test
+```
+
+23 tests over pricing arithmetic, authentication and permissions, and the order write
+path — including that a failed write rolls back without consuming stock, and that
+loading orders costs three queries no matter how many there are. The suite refuses to
+run unless `TEST_DATABASE_URL` is set, because it truncates every table. CI runs it on
+every push against a PostgreSQL service container.
+
+## Deploying to Vercel + Supabase
+
+1. Create a Supabase project and copy the **connection pooler** URI (port 6543) — a
+   serverless function opens a connection per invocation.
+2. Point a local shell at it and create the schema:
+   `DATABASE_URL='<supabase-uri>' npm run migrate && DATABASE_URL='<supabase-uri>' npm run seed`
+3. Import the repository on Vercel and set **Root Directory** to `toyhub`.
+4. Add environment variables: `DATABASE_URL`, `SESSION_SECRET`, and the two
+   `STRIPE_*` keys if payments should work.
+5. Deploy. `vercel.json` sends `/api/*` to the Express app and serves `public/` as
+   static files; `/api/health` reports whether the database is reachable.
+
+## Known limitations
+
+Deliberate, given this is a portfolio build rather than a live shop:
+
+- **Email is mocked.** Confirmation and tracking messages are written to the
+  `email_log` table and the console instead of being sent, so the timeline in the app is
+  backed by real records. [`lib/mailer.js`](toyhub/server/lib/mailer.js) is the single
+  function to replace with a provider.
+- **No Stripe webhook.** The order is written when the browser reports a successful
+  payment. Taking real money would mean moving that to a `payment_intent.succeeded`
+  webhook, so a closed tab cannot lose an order.
+- **No rate limiting or security headers**, and the seeded administrator password is
+  public in this file — all fine for a demo, none of it fine for a real shop.
+
+The design came from a prototype built in Claude Design; the original brief and
+conversation are in [`project/`](project/) and [`chats/`](chats/).
