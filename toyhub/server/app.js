@@ -32,12 +32,38 @@ app.use(session({
 
 app.use(loadUser);
 
+// Which endpoint the pool was pointed at, with the credentials left out — the
+// most common deployment mistake is a connection string that reaches the wrong
+// host or port, and "unreachable" on its own does not say which.
+function dbTarget() {
+  try {
+    const u = new URL(process.env.DATABASE_URL || '');
+    return `${u.hostname}:${u.port || '5432'}`;
+  } catch (e) {
+    return process.env.DATABASE_URL ? 'unparseable connection string' : 'not configured';
+  }
+}
+
+const POOLER_NOTE = 'Supabase answers a direct connection over IPv6 only — use the transaction pooler on port 6543.';
+const DB_HINTS = {
+  '28P01': 'The password in DATABASE_URL was rejected. A password with @ : / # in it has to be percent-encoded.',
+  '3D000': 'That database name does not exist on the server.',
+  ENOTFOUND: 'That hostname does not resolve. Check it was copied whole.',
+  ETIMEDOUT: `The host never answered. ${POOLER_NOTE}`,
+  ENETUNREACH: `There is no route to that host. ${POOLER_NOTE}`,
+  ECONNREFUSED: 'Nothing is listening on that port.'
+};
+
 app.get('/api/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
-    res.json({ ok: true });
+    res.json({ ok: true, db: dbTarget() });
   } catch (e) {
-    res.status(503).json({ ok: false, error: 'database unreachable' });
+    console.error('health: database unreachable —', e.code || '', e.message);
+    res.status(503).json({
+      ok: false, error: 'database unreachable', db: dbTarget(),
+      code: e.code || '', hint: DB_HINTS[e.code] || e.message
+    });
   }
 });
 
