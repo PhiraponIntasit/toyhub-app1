@@ -1,5 +1,5 @@
 import { h } from '../dom.js';
-import { imgsOf, featuredOrder, pickRandom, money, bgUrl, MAX_FEATURED } from '../helpers.js';
+import { imgsOf, featuredOrder, pickRandom, money, bgUrl, soldOutOf, MAX_FEATURED } from '../helpers.js';
 import { plateBg, plateCard } from './common.js';
 
 // The hero plate opens the piece it is showing, so the image is as clickable as
@@ -25,12 +25,23 @@ function heroPlate(store, hero, heroImgs) {
 export function renderHome(store) {
   const s = store.state;
   const products = s.products;
-  const feat = featuredOrder(products);
-  const heroPool = (feat.length ? feat : products).slice(0, MAX_FEATURED);
+  // The homepage is the shop window, so it only shows what can still be
+  // bought: leading with a piece that is gone sends the visitor to a page
+  // whose only offer is to be told if it returns. The catalogue still lists
+  // sold-out pieces, where the Sold out tag and the availability filter give
+  // them a place.
+  const available = products.filter((p) => !soldOutOf(p));
+  const feat = featuredOrder(available);
+  const heroPool = (feat.length ? feat : available).slice(0, MAX_FEATURED);
   const hero = heroPool.length ? heroPool[s.heroI % heroPool.length] : null;
   const heroImgs = hero ? imgsOf(hero) : [];
   const brands = Array.from(new Set(products.map((p) => p.line))).filter(Boolean);
-  const featured = pickRandom(products, 4, s.seed);
+  const featured = pickRandom(available, 4, s.seed);
+  // Told apart so an empty shelf does not read as an empty catalogue.
+  const emptyTitle = products.length ? 'Every piece is spoken for' : 'No pieces catalogued';
+  const emptyBody = products.length
+    ? 'Nothing is on the shelf at the moment. The catalogue keeps what has sold, and a saved piece is a request to be told if it returns.'
+    : 'Add your first piece from the Admin screen.';
 
   return h('main', {}, [
     h('section', { style: 'max-width:1200px;margin:0 auto;padding:56px 24px 0' }, [
@@ -38,8 +49,8 @@ export function renderHome(store) {
         h('div', {}, [
           h('div', { 'data-enter': true, class: 'tnum', style: 'font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:18px' },
             `Plate ${String((s.heroI % Math.max(heroPool.length, 1)) + 1).padStart(2, '0')} — ${hero ? hero.line : 'ToyHub'}`),
-          h('h1', { 'data-enter': true, style: 'font-size:clamp(38px,4.4vw,62px);font-weight:400;margin:0 0 18px;animation-delay:.06s' }, hero ? hero.name : 'No pieces catalogued'),
-          h('p', { 'data-enter': true, class: 'just', style: 'max-width:44ch;font-size:15px;opacity:0.85;animation-delay:.12s' }, hero ? hero.description : 'Add your first piece from the Admin screen.'),
+          h('h1', { 'data-enter': true, style: 'font-size:clamp(38px,4.4vw,62px);font-weight:400;margin:0 0 18px;animation-delay:.06s' }, hero ? hero.name : emptyTitle),
+          h('p', { 'data-enter': true, class: 'just', style: 'max-width:44ch;font-size:15px;opacity:0.85;animation-delay:.12s' }, hero ? hero.description : emptyBody),
           h('div', { class: 'tnum', style: 'display:flex;align-items:baseline;gap:14px;margin:26px 0 22px' }, [
             h('span', { class: 'price', style: 'font-size:26px' }, hero ? money(hero.price) : ''),
             h('span', { style: 'font-size:12px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6' }, hero ? hero.status : '')
